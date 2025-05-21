@@ -30,6 +30,7 @@ Desenvolver um sistema completo para controle de frequência escolar/universitá
 - **Versionamento**: Git/GitHub
 
 ## 📌 Próximos Passos
+- [ ] Implementar um diagrama (modelo conceitual)
 - [ ] Desenvolver interface básica
 - [ ] Implementar lógica de cadastro
 - [ ] Criar sistema de registro de frequência
