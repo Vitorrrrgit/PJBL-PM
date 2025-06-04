@@ -1,4 +1,4 @@
-package models;
+package src;
 
 public abstract class Usuario {
     private String nome;
