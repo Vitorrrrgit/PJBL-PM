@@ -30,7 +30,7 @@ Desenvolver um sistema completo para controle de frequência escolar/universitá
 - **Versionamento**: Git/GitHub
 
 ## 📌 Próximos Passos
-- [ ] Implementar um diagrama (modelo conceitual)
+- [X] Implementar um diagrama (modelo conceitual)
 - [ ] Desenvolver interface básica
 - [ ] Implementar lógica de cadastro
 - [ ] Criar sistema de registro de frequência
@@ -43,3 +43,7 @@ Desenvolver um sistema completo para controle de frequência escolar/universitá
 3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
 4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
+
+## Modelo de Liderança Transformacional
+![Diagrama](https://github.com/user-attachments/assets/065aac45-c687-401f-82a5-879f5b5b4f89)
+
