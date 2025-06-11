@@ -1,22 +1,16 @@
-import java.util.ArrayList;
-
 public class Main {
     public static void main(String[] args) {
-        // lista com usuarios do sistema
-        ArrayList<Usuario> usuarios = new ArrayList<>();
+        Usuario[] usuarios = {
+            new Aluno(1, "Vitor", "vitor@email.com", "41999999991", "a1234"),
+            new Professor(2, "Pedro", "pedro@email.com", "41999999992", "Java"),
+            new Coordenador(3, "Cleber", "cleber@email.com", "41999999993", "CS"),
+            new Administrador(4, "Admin", "admin@email.com", "41999999994")
+        };
 
-        Usuario user1 = new Professor(
-            0, 
-            "professor", 
-            "pedrao", 
-            "pedrao@email.com", 
-            "41999999999", 
-            "java");
-            
-        usuarios.add(user1);
-
-        for (Usuario U : usuarios) {
-            System.out.println(U.getNome());
+        for (Usuario u : usuarios) {
+            System.out.println("Usuário: " + u.getNome());
+            u.exibirMenu();  
+            System.out.println();
         }
     }
 }

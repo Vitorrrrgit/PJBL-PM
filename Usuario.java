@@ -1,30 +1,25 @@
-// superclass usuario
-public abstract class Usuario {
+import java.io.Serializable;
 
-    // atributos usuarios
+// Superclasse abstrata Usuario
+public abstract class Usuario implements Serializable {
+
     private int     id;
-    private String  tipoUsuario;
     private String  nome;
     private String  email;
     private String  telefone;
 
-    // construtor usuario
-    public Usuario(int id, String tipoUsuario, String nome, String email, String telefone) {
-        this.id             = id;
-        this.tipoUsuario    = tipoUsuario;
-        this.nome           = nome;
-        this.email          = email;
-        this.telefone       = telefone;
+    public Usuario(int id, String nome, String email, String telefone) {
+        this.id       = id;
+        this.nome     = nome;
+        this.email    = email;
+        this.telefone = telefone;
     }
 
-    // metodo abstrato
-    public void exibirTipoUsuario() {
-        System.out.println("Tipo do usuario: " + tipoUsuario);
-    }
+    public int getId() { return id; }
+    public String getNome() { return nome; }
+    public String getEmail() { return email; }
+    public String getTelefone() { return telefone; }
 
-    // getter
-    public String getNome() {
-        return nome;
-    }
-
+    // metodo abstrato para subclasses
+    public abstract void exibirMenu();
 }

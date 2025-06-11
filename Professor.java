@@ -1,36 +1,19 @@
-import java.util.ArrayList;
-
-// subclass professor
 public class Professor extends Usuario {
 
-    // atributos do professor
-    String disciplina;
+    private String disciplina;
 
-    // construtor professor
-    
-    Professor(int id, String tipoUsuario, String nome, String email, String telefone, String disciplina) {
-        // atributos de usuario
-        super(id, tipoUsuario, nome, email, telefone);
-
-        // atributos do professor
+    public Professor(int id, String nome, String email, String telefone, String disciplina) {
+        super(id, nome, email, telefone);
         this.disciplina = disciplina;
     }
 
-    // metodos do professor:
+    public String getDisciplina() { return disciplina; }
 
-    // lista dos alunos
-    public void listaAlunos() {
-        
+    @Override
+    public void exibirMenu() {
+        System.out.println("Menu do Professor");
+        System.out.println("1 - Registrar presença");
+        System.out.println("2 - Ver turmas");
+        System.out.println("3 - Sair");
     }
-
-    // iniciar chamada
-    public void iniciarChamada() {
-
-    }
-
-    // exibir chamadas
-    public void exibirChamada() {
-
-    }
-
 }
