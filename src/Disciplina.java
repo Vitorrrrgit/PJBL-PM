@@ -45,4 +45,5 @@ public class Disciplina {
                 codigoDisciplina.equals(that.codigoDisciplina) &&
                 professorResponsavel.equals(that.professorResponsavel);
     }
+
 }
