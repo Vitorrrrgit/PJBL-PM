@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.table.DefaultTableModel;
 
 public class Coordenador extends Usuario implements MenuCoordenador, Serializable {
     private static final long serialVersionUID = 1L;
@@ -12,6 +13,7 @@ public class Coordenador extends Usuario implements MenuCoordenador, Serializabl
         this.professores = new ArrayList<>();
     }
 
+    // Métodos existentes (mantidos)
     @Override
     public boolean adicionarProfessor(Professor professor) {
         if (professor == null || existeProfessor(professor.getId())) {
@@ -20,7 +22,7 @@ public class Coordenador extends Usuario implements MenuCoordenador, Serializabl
         return professores.add(professor);
     }
 
-    @Override
+    @Override 
     public boolean removerProfessor(int professorId) {
         return professores.removeIf(p -> p.getId() == professorId);
     }
@@ -47,6 +49,55 @@ public class Coordenador extends Usuario implements MenuCoordenador, Serializabl
                 .orElse(false);
     }
 
+    // ---- Novos métodos para Swing ----
+    @Override
+    public DefaultTableModel getModeloTabelaProfessores() {
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"ID", "Nome", "Email", "Disciplinas"}, 0);
+        
+        for (Professor prof : professores) {
+            model.addRow(new Object[]{
+                prof.getId(),
+                prof.getNome(),
+                prof.getEmail(),
+                String.join(", ", prof.getDisciplinas().stream()
+                    .map(Disciplina::getNome).toList())
+            });
+        }
+        return model;
+    }
+
+    @Override
+    public DefaultTableModel getModeloTabelaDisciplinas(int professorId) {
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"ID Disciplina", "Nome"}, 0);
+        
+        buscarProfessor(professorId).ifPresent(prof -> {
+            prof.getDisciplinas().forEach(d -> {
+                model.addRow(new Object[]{d.getId(), d.getNome()});
+            });
+        });
+        return model;
+    }
+
+    @Override
+    public String gerarRelatorioProfessoresHTML() {
+        StringBuilder sb = new StringBuilder("<html><h2>Relatório de Professores</h2><ul>");
+        professores.forEach(prof -> {
+            sb.append(String.format(
+                "<li><b>%s</b> (ID: %d)<br>Email: %s<br>Disciplinas: %s<hr></li>",
+                prof.getNome(),
+                prof.getId(),
+                prof.getEmail(),
+                String.join(", ", prof.getDisciplinas().stream()
+                    .map(Disciplina::getNome).toList())
+            ));
+        });
+        sb.append("</ul></html>");
+        return sb.toString();
+    }
+
+    // ---- Métodos existentes mantidos ----
     @Override
     public String gerarRelatorioProfessores() {
         StringBuilder sb = new StringBuilder("--- RELATÓRIO DE PROFESSORES ---\n");
@@ -58,7 +109,7 @@ public class Coordenador extends Usuario implements MenuCoordenador, Serializabl
                 prof.getEmail(),
                 prof.getDisciplinas().stream().map(Disciplina::getNome).toList(),
                 "-".repeat(50)
-            );
+            ));
         });
         return sb.toString();
     }
@@ -66,7 +117,7 @@ public class Coordenador extends Usuario implements MenuCoordenador, Serializabl
     @Override
     public String gerarRelatorioDisciplinas() {
         // Implementação similar para disciplinas
-        return "";
+        return "Relatório de disciplinas não implementado ainda";
     }
 
     @Override
