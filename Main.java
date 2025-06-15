@@ -1,15 +1,23 @@
 public class Main {
     public static void main(String[] args) {
-        Usuario[] usuarios = {
-            new Aluno(1, "Vitor", "vitor@email.com", "41999999991", "a1234"),
-            new Professor(2, "Pedro", "pedro@email.com", "41999999992", "Java"),
-            new Coordenador(3, "Cleber", "cleber@email.com", "41999999993", "CS"),
-            new Administrador(4, "Admin", "admin@email.com", "41999999994")
-        };
+        Aluno aluno = new Aluno(1, "Vitor", "vitor@email.com", "41999999991", "a1234");
+        Professor professor = new Professor(2, "Pedro", "pedro@email.com", "41999999992", "Java");
+        Administrador admin = new Administrador(3, "Admin", "admin@email.com", "41999999993");
 
-        for (Usuario u : usuarios) {
+        // Registrar algumas presenças e faltas
+        professor.registrarPresenca(aluno, true);
+        professor.registrarPresenca(aluno, false);
+
+        System.out.printf("Aluno %s - Presenças: %d, Faltas: %d, %.2f%% de presença\n",
+                aluno.getNome(), aluno.getPresencas(), aluno.getFaltas(), aluno.getPercentualPresenca());
+
+        // Administrador cadastra usuários
+        admin.cadastrarUsuario(aluno);
+        admin.cadastrarUsuario(professor);
+
+        for (Usuario u : admin.getUsuarios()) {
             System.out.println("Usuário: " + u.getNome());
-            u.exibirMenu();  
+            u.exibirMenu();
             System.out.println();
         }
     }
