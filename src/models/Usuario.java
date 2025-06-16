@@ -1,4 +1,7 @@
 package src.models;
+
+import src.persistencia.Serializador;
+
 public abstract class Usuario implements Serializador {
     protected int id;           
     protected String nome;
