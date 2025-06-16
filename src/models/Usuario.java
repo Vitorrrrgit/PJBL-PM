@@ -1,4 +1,4 @@
-package src;
+package src.models;
 public abstract class Usuario implements Serializador {
     protected int id;           
     protected String nome;
