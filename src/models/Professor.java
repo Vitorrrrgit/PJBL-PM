@@ -1,24 +1,28 @@
-package src.models;
+package models;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Subclasse de Usuario que representa um professor.
+ * VERSÃO CORRIGIDA FINAL
+ */
 public class Professor extends Usuario {
-    private static final long serialVersionUID = 1L;
-
-    private List<String> disciplinas;
+    private String area;
+    private String titulacao;
+    private List<String> disciplinas = new ArrayList<>();
 
     public Professor() {
         super();
-        this.disciplinas = new ArrayList<>();
     }
-
 
     public Professor(int id, String nome, String email, String cpf, String area, String titulacao) {
-        super(id, nome, email, cpf,);
-        this.disciplinas = new ArrayList<>();
+        super(id, nome, email, cpf);
+        this.area = area;
+        this.titulacao = titulacao;
     }
 
+    // IMPLEMENTAÇÃO OBRIGATÓRIA DOS MÉTODOS ABSTRATOS
     @Override
     public String getTipoUsuario() {
         return "Professor";
@@ -26,39 +30,56 @@ public class Professor extends Usuario {
 
     @Override
     public String[] getPermissoes() {
-        return new String[] { "VALIDAR_FREQUENCIA", "VISUALIZAR_ALUNOS" };
+        return new String[] { "EDITAR_FREQUENCIA", "CONSULTAR_ALUNOS", "GERAR_RELATORIOS" };
+    }
+
+    @Override
+    public String gerarRelatorioPersonalizado() {
+        return String.format("Relatório de Aulas do Professor %s (Área: %s)", getNome(), getArea());
     }
 
     @Override
     public boolean podeEditarFrequencia() {
-        // Professor deve poder lançar ou editar frequência dos alunos
         return true;
     }
 
     @Override
     public boolean podeGerenciarUsuarios() {
-        // Professor não pode gerenciar todos os usuários
         return false;
     }
 
     @Override
-    public String gerarRelatorioPersonalizado() {
-        // retorna um relatorio para o usuario professor
-        return String.format("Relatório de Aulas do Professor %s (Área: %s)", nome, area);
+    public boolean podeExportarDados() {
+        return false; // CORRIGIDO: Professor não faz exportação de dados gerais.
+    }
+
+    @Override
+    public boolean podeVerRelatoriosCompletos() {
+        return false;
+    }
+
+    // Getters e Setters
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getTitulacao() {
+        return titulacao;
+    }
+
+    public void setTitulacao(String titulacao) {
+        this.titulacao = titulacao;
     }
 
     public List<String> getDisciplinas() {
-        return new ArrayList<>(disciplinas);
-    }
-    public void setDisciplinas(List<String> disciplinas) {
-        this.disciplinas = (disciplinas != null ? disciplinas : new ArrayList<>());
+        return disciplinas;
     }
 
-    public int getProfessorId() {
-        try {
-            return Integer.parseInt(cpf.replaceAll("\\D+", ""));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+    public void setDisciplinas(List<String> disciplinas) {
+        this.disciplinas = disciplinas;
     }
 }
