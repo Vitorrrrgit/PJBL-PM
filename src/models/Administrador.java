@@ -1,9 +1,5 @@
 package models;
 
-/**
- * Subclasse de Usuario que representa um administrador.
- * VERSÃO CORRIGIDA FINAL
- */
 public class Administrador extends Usuario {
     private String nivelAcesso;
 

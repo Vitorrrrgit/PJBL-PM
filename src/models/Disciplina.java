@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class Disciplina {
     private String nomeDisciplina;
     private String codigoDisciplina;
@@ -45,5 +47,10 @@ public class Disciplina {
                 codigoDisciplina.equals(that.codigoDisciplina) &&
                 professorResponsavel.equals(that.professorResponsavel);
     }
-
+        @Override
+    public int hashCode() {
+        return Objects.hash(codigoDisciplina); // Gera um hash code baseado no código da disciplina
+    }
 }
+
+

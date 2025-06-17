@@ -3,10 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Subclasse de Usuario que representa um professor.
- * VERSÃO CORRIGIDA FINAL
- */
+
 public class Professor extends Usuario {
     private String area;
     private String titulacao;
@@ -22,7 +19,6 @@ public class Professor extends Usuario {
         this.titulacao = titulacao;
     }
 
-    // IMPLEMENTAÇÃO OBRIGATÓRIA DOS MÉTODOS ABSTRATOS
     @Override
     public String getTipoUsuario() {
         return "Professor";
@@ -50,7 +46,7 @@ public class Professor extends Usuario {
 
     @Override
     public boolean podeExportarDados() {
-        return false; // CORRIGIDO: Professor não faz exportação de dados gerais.
+        return false;
     }
 
     @Override

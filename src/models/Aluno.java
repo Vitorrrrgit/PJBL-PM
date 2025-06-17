@@ -3,10 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Subclasse de Usuario que representa um aluno.
- * VERSÃO CORRIGIDA FINAL
- */
+
 public class Aluno extends Usuario {
     private String matricula;
     private String curso;
@@ -26,7 +23,7 @@ public class Aluno extends Usuario {
         this.frequencias = new ArrayList<>();
     }
 
-    // IMPLEMENTAÇÃO OBRIGATÓRIA DOS MÉTODOS ABSTRATOS
+    //  MÉTODOS ABSTRATOS
     @Override
     public String getTipoUsuario() {
         return "Aluno";

@@ -2,10 +2,6 @@ package models;
 
 import java.io.Serializable;
 
-/**
- * Classe abstrata base para todos os tipos de usuário do sistema.
- * VERSÃO CORRIGIDA FINAL
- */
 public abstract class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -16,10 +12,6 @@ public abstract class Usuario implements Serializable {
     protected String senha;
     protected boolean ativo;
 
-    /**
-     * Construtor principal. Note que a senha não é recebida, e sim definida
-     * com um valor padrão para simplificar.
-     */
     public Usuario(int id, String nome, String email, String cpf) {
         this.id = id;
         this.nome = nome;
@@ -29,16 +21,11 @@ public abstract class Usuario implements Serializable {
         this.ativo = true;
     }
 
-    /**
-     * Construtor vazio.
-     */
+
     public Usuario() {
         this.senha = "123";
         this.ativo = true;
     }
-
-    // ======= MÉTODOS ABSTRATOS (O CONTRATO) =======
-    // Cada classe filha DEVE implementar estes métodos.
 
     public abstract String getTipoUsuario();
     public abstract String[] getPermissoes();
@@ -48,8 +35,6 @@ public abstract class Usuario implements Serializable {
     public abstract boolean podeExportarDados();
     public abstract boolean podeVerRelatoriosCompletos();
 
-
-    // ======= MÉTODOS CONCRETOS (COMPORTAMENTO COMUM) =======
     public String getDescricaoCompleta() {
         return String.format("%s (%s) - %s", nome, getTipoUsuario(), email);
     }

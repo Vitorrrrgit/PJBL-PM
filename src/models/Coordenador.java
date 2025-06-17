@@ -3,10 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Subclasse de Usuario que representa um coordenador.
- * VERSÃO CORRIGIDA FINAL
- */
+
 public class Coordenador extends Usuario {
     private String curso;
     private List<String> disciplinasGerenciadas = new ArrayList<>();
@@ -48,7 +45,7 @@ public class Coordenador extends Usuario {
 
     @Override
     public boolean podeExportarDados() {
-        return false; // CORRIGIDO: Coordenador não pode exportar dados.
+        return false; 
     }
 
     @Override

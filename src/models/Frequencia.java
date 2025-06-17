@@ -19,7 +19,6 @@ public class Frequencia implements Serializable {
 
     public Frequencia() {}
 
-    // CONSTRUTOR CORRIGIDO E DEFINITIVO
     public Frequencia(int id, String alunoMatricula, String registradoPorCpf,
             String disciplina, LocalDate data, boolean presente, String observacoes) {
         this.id = id;
@@ -31,7 +30,7 @@ public class Frequencia implements Serializable {
         this.observacoes = observacoes;
     }
 
-    // Getters e Setters...
+    // Getters e Setters
     public int getId() { return id; }
     public String getAlunoMatricula() { return alunoMatricula; }
     public String getRegistradoPorCpf() { return registradoPorCpf; }
