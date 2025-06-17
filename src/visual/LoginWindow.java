@@ -22,16 +22,15 @@ public class LoginWindow extends JFrame {
         criarComponentes();
         organizarLayout();
         adicionarListeners();
-
         setVisible(true);
     }
 
     private void configurarJanela() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(950, 750); 
+        setSize(650, 550); 
         setLocationRelativeTo(null);
         setResizable(false);
-        getContentPane().setBackground(new Color(240, 240, 240));
+        setBackground(Color.WHITE);
     }
 
 private void criarComponentes() {
@@ -98,7 +97,7 @@ private void criarComponentes() {
         // Linha 2: Painel com os botões
         gbc.gridy = 2;
         gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST; // Alinha os botões à direita
+        gbc.anchor = GridBagConstraints.EAST; 
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         painelBotoes.add(btnCancelar);
         painelBotoes.add(btnLogin);

@@ -290,6 +290,7 @@ public class Sistema implements Serializable {
         adicionarUsuario(admin);
         adicionarUsuario(debora);
 
+        adicionarUsuario(new Aluno(10, "Ana", "ana@email.com", gerarCPF(), "MAT-1000", "Engenharia", 2));
         adicionarUsuario(new Aluno(11, "João Pereira", "joao.p@email.com", gerarCPF(), "MAT-1001", "Engenharia", 3));
         adicionarUsuario(new Aluno(12, "Mariana Costa", "mari.costa@email.com", gerarCPF(), "MAT-1002", "Engenharia", 3));
         adicionarUsuario(new Aluno(13, "Lucas Martins", "lucas.m@email.com", gerarCPF(), "MAT-1003", "Arquitetura", 1));
@@ -310,6 +311,7 @@ public class Sistema implements Serializable {
         turmaCalculo.adicionarAluno((Aluno) usuarios.get(4)); // João
         turmaCalculo.adicionarAluno((Aluno) usuarios.get(5)); // Mariana
         turmaCalculo.adicionarAluno((Aluno) usuarios.get(8)); // Gabriel
+        turmaCalculo.adicionarAluno((Aluno) usuarios.get(10)); // Ana
         adicionarTurma(turmaCalculo);
 
         Turma turmaDireito = new Turma("História do Direito", 2025, 1, marta);
