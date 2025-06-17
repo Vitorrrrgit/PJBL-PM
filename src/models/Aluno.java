@@ -10,7 +10,7 @@ public class Aluno extends Usuario {
     private int semestre;
     private List<Frequencia> frequencias;
 
-    public Aluno() {
+    public Aluno(int par, String ana_Silva, String anaemailcom, String string, String par1) {
         super();
         this.frequencias = new ArrayList<>();
     }

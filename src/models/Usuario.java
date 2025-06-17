@@ -17,10 +17,9 @@ public abstract class Usuario implements Serializable {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
-        this.senha = "123"; // Senha padrão para todos
+        this.senha = "123"; // Senha padrão para todos por enquasnto o sistema estiver em desenvolvimento
         this.ativo = true;
     }
-
 
     public Usuario() {
         this.senha = "123";
@@ -28,11 +27,17 @@ public abstract class Usuario implements Serializable {
     }
 
     public abstract String getTipoUsuario();
+
     public abstract String[] getPermissoes();
+
     public abstract String gerarRelatorioPersonalizado();
+
     public abstract boolean podeEditarFrequencia();
+
     public abstract boolean podeGerenciarUsuarios();
+
     public abstract boolean podeExportarDados();
+
     public abstract boolean podeVerRelatoriosCompletos();
 
     public String getDescricaoCompleta() {
@@ -45,28 +50,66 @@ public abstract class Usuario implements Serializable {
     }
 
     // ======= GETTERS E SETTERS =======
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
-    @Override
-public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Usuario usuario = (Usuario) o;
-    return this.id == usuario.id; // Compara os usuários pelo ID
-}
+    public int getId() {
+        return id;
+    }
 
-@Override
-public int hashCode() {
-    return Integer.hashCode(id); // Gera um hash code baseado no ID
-}
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Usuario usuario = (Usuario) o;
+        return this.id == usuario.id; // Compara os usuários pelo ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id); // Gera um hash code baseado no ID
+    }
 }

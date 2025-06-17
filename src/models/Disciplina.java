@@ -1,8 +1,13 @@
 package models;
 
+import java.io.Serializable; 
 import java.util.Objects;
 
-public class Disciplina {
+
+public class Disciplina implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String nomeDisciplina;
     private String codigoDisciplina;
     private String professorResponsavel;
@@ -12,45 +17,32 @@ public class Disciplina {
         this.codigoDisciplina = codigoDisciplina;
         this.professorResponsavel = professorResponsavel;
     }
-    public String getNomeDisciplina() {
-        return nomeDisciplina;
-    }
-    public String getCodigoDisciplina() {
-        return codigoDisciplina;
-    }
-    public String getProfessorResponsavel() {
-        return professorResponsavel;
-    }
-    public void setNomeDisciplina(String nomeDisciplina) {
-        this.nomeDisciplina = nomeDisciplina;
-    }
-    public void setCodigoDisciplina(String codigoDisciplina) {
-        this.codigoDisciplina = codigoDisciplina;
-    }
-    public void setProfessorResponsavel(String professorResponsavel) {
-        this.professorResponsavel = professorResponsavel;
-    }
+    
+    // Getters e Setters
+    public String getNomeDisciplina() { return nomeDisciplina; }
+    public void setNomeDisciplina(String nome) { this.nomeDisciplina = nome; }
+    public String getCodigoDisciplina() { return codigoDisciplina; }
+    public void setCodigoDisciplina(String codigo) { this.codigoDisciplina = codigo; }
+    public String getProfessorResponsavel() { return professorResponsavel; }
+    public void setProfessorResponsavel(String cpf) { this.professorResponsavel = cpf; }
+
     @Override
     public String toString() {
-        return "Disciplina{" +
-                "nomeDisciplina='" + nomeDisciplina + '\'' +
-                ", codigoDisciplina='" + codigoDisciplina + '\'' +
-                ", professorResponsavel='" + professorResponsavel + '\'' +
-                '}';
+        return nomeDisciplina + " (" + codigoDisciplina + ")";
     }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Disciplina)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Disciplina that = (Disciplina) o;
-        return nomeDisciplina.equals(that.nomeDisciplina) &&
-                codigoDisciplina.equals(that.codigoDisciplina) &&
-                professorResponsavel.equals(that.professorResponsavel);
+        return Objects.equals(codigoDisciplina, that.codigoDisciplina);
     }
-        @Override
+
+
+    @Override
     public int hashCode() {
-        return Objects.hash(codigoDisciplina); // Gera um hash code baseado no código da disciplina
+        return Objects.hash(codigoDisciplina);
     }
 }
-
-
