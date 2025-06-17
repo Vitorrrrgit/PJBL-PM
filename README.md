@@ -31,11 +31,11 @@ Desenvolver um sistema completo para controle de frequência escolar/universitá
 
 ## 📌 Próximos Passos
 - [X] Implementar um diagrama (modelo conceitual)
-- [ ] Desenvolver interface básica
-- [ ] Implementar lógica de cadastro
-- [ ] Criar sistema de registro de frequência
-- [ ] Desenvolver cálculos de porcentagem
-- [ ] Testar e validar funcionalidades
+- [X] Desenvolver interface básica
+- [X] Implementar lógica de cadastro
+- [X] Criar sistema de registro de frequência
+- [X] Desenvolver cálculos de porcentagem
+- [X] Testar e validar funcionalidades
 
 ## 📝 Como Contribuir
 1. Faça um fork do projeto
