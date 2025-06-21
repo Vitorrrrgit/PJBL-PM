@@ -17,7 +17,8 @@ public class Frequencia implements Serializable {
 
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public Frequencia() {}
+    public Frequencia() {
+    }
 
     public Frequencia(int id, String alunoMatricula, String registradoPorCpf,
             String disciplina, LocalDate data, boolean presente, String observacoes) {
@@ -31,13 +32,44 @@ public class Frequencia implements Serializable {
     }
 
     // Getters e Setters
-    public int getId() { return id; }
-    public String getAlunoMatricula() { return alunoMatricula; }
-    public String getRegistradoPorCpf() { return registradoPorCpf; }
-    public String getDisciplina() { return disciplina; }
-    public LocalDate getData() { return data; }
-    public boolean isPresente() { return presente; }
-    public String getObservacoes() { return observacoes; }
-    public String getDataFormatada() { return data != null ? data.format(FORMATO_DATA) : "N/A"; }
-    public String getStatus() { return presente ? "Presente" : "Falta"; }
+    public int getId() {
+        return id;
+    }
+
+    public String getAlunoMatricula() {
+        return alunoMatricula;
+    }
+
+    public String getRegistradoPorCpf() {
+        return registradoPorCpf;
+    }
+
+    public String getDisciplina() {
+        return disciplina;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public boolean isPresente() {
+        return presente;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public String getDataFormatada() {
+        return data != null ? data.format(FORMATO_DATA) : "N/A";
+    }
+
+    public String getStatus() {
+        return presente ? "Presente" : "Falta";
+    }
+
+    public void setId(int id) {
+    this.id = id;
+    }
 }
+

@@ -78,7 +78,7 @@ public class PainelProfessor extends JPanel {
         JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelSair.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        JButton btnLogout = new JButton("Logout ");
+        JButton btnLogout = new JButton("Logout");
 
         btnLogout.addActionListener(_ -> {
             int confirmacao = JOptionPane.showConfirmDialog(
@@ -114,23 +114,47 @@ public class PainelProfessor extends JPanel {
 
     private void salvarFrequencias() {
         Turma turmaSelecionada = (Turma) comboTurmas.getSelectedItem();
-        if (turmaSelecionada == null)
+        if (turmaSelecionada == null) {
+            JOptionPane.showMessageDialog(this, "Nenhuma turma selecionada!", "Atenção", JOptionPane.WARNING_MESSAGE);
             return;
+        }
+        
         int registrosSalvos = 0;
+        
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             String matricula = (String) tableModel.getValueAt(i, 0);
             boolean presente = (boolean) tableModel.getValueAt(i, 2);
-            Frequencia freq = new Frequencia((int) System.currentTimeMillis() + i, matricula, professor.getCpf(),
-                    turmaSelecionada.getNomeDisciplina(), LocalDate.now(), presente, "");
+            
+            // CORREÇÃO: Usar o método correto de geração de ID
+            int novoId = sistema.obterProximoIdFrequencia();
+            
+            Frequencia freq = new Frequencia(
+                novoId, 
+                matricula, 
+                professor.getCpf(),
+                turmaSelecionada.getNomeDisciplina(), 
+                LocalDate.now(), 
+                presente, 
+                presente ? "" : "Falta registrada pelo professor"
+            );
+            
             try {
                 sistema.adicionarFrequencia(freq);
                 registrosSalvos++;
-            } catch (persistencia.SistemaException ex) { // Captura o erro específico do nosso sistema
-                // Você pode mostrar uma mensagem de erro se algo der errado ao salvar
+            } catch (persistencia.SistemaException ex) {
                 System.err.println("Erro ao salvar frequência para matrícula " + matricula + ": " + ex.getMessage());
             }
         }
-        JOptionPane.showMessageDialog(this, "Frequências salvas para " + registrosSalvos + " alunos.", "Sucesso",
+        
+        if (registrosSalvos > 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Frequências salvas com sucesso!\n" + 
+                "Total de registros: " + registrosSalvos + " alunos\n" +
+                "Data: " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
+                "Sucesso", 
                 JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Nenhuma frequência foi salva.", "Atenção", JOptionPane.WARNING_MESSAGE);
+        }
     }
 }

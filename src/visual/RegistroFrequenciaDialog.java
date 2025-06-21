@@ -111,20 +111,27 @@ public class RegistroFrequenciaDialog extends JDialog {
             LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             boolean presente = cbPresenca.getSelectedIndex() == 0;
             String observacoes = txtObservacoes.getText().trim();
-            int novoId = (int) System.currentTimeMillis(); // Usando int para consistência
+            
+            // CORREÇÃO: Usar o método correto de geração de ID
+            int novoId = sistema.obterProximoIdFrequencia();
 
             Frequencia freq = new Frequencia(novoId, matricula, usuarioLogado.getCpf(), disciplina, data, presente,
                     observacoes);
             sistema.adicionarFrequencia(freq);
 
-            JOptionPane.showMessageDialog(this, "Frequência registrada com sucesso!", "Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Frequência registrada com sucesso!\n" +
+                "ID da Frequência: " + novoId + "\n" +
+                "Aluno: " + matricula + "\n" +
+                "Status: " + (presente ? "Presente" : "Falta"), 
+                "Sucesso",
+                JOptionPane.INFORMATION_MESSAGE);
             dispose(); // Fecha o diálogo
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.", "Erro de Formato",
                     JOptionPane.ERROR_MESSAGE);
-        } catch (persistencia.SistemaException ex) { // <-- Bloco específico para erros do nosso sistema
+        } catch (persistencia.SistemaException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao registrar frequência: " + ex.getMessage(), "Erro de Validação",
                     JOptionPane.ERROR_MESSAGE);
         }

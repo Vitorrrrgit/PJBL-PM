@@ -79,5 +79,6 @@ public class AlterarSenhaDialog extends JDialog {
         } catch (SistemaException e) {
             JOptionPane.showMessageDialog(this, "Não foi possível alterar a senha: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
+        
     }
 }

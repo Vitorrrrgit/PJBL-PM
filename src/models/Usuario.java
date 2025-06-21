@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Random;
 
 public abstract class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -17,13 +18,42 @@ public abstract class Usuario implements Serializable {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
-        this.senha = "123"; // Senha padrão para todos por enquasnto o sistema estiver em desenvolvimento
+        this.senha = gerarSenhaInicial(nome, cpf); // Senha segura baseada em nome e CPF
         this.ativo = true;
     }
 
     public Usuario() {
-        this.senha = "123";
+        this.senha = "temp123"; // Senha temporária mais segura que "123"
         this.ativo = true;
+    }
+
+    // MÉTODO PARA GERAR SENHA INICIAL SEGURA
+    private String gerarSenhaInicial(String nome, String cpf) {
+        if (nome == null || nome.isEmpty() || cpf == null || cpf.isEmpty()) {
+            return "temp" + new Random().nextInt(9999); // Fallback seguro
+        }
+        
+        try {
+            // Primeira letra do nome em maiúscula
+            String primeiraLetra = nome.substring(0, 1).toUpperCase();
+            
+            // Últimos 4 dígitos do CPF (removendo formatação)
+            String cpfLimpo = cpf.replaceAll("[^0-9]", ""); // Remove tudo que não é número
+            String ultimosDigitos = cpfLimpo.length() >= 4 ? 
+                cpfLimpo.substring(cpfLimpo.length() - 4) : cpfLimpo;
+            
+            // Senha: Primeira letra + últimos 4 dígitos + !
+            String senhaGerada = primeiraLetra + ultimosDigitos + "!";
+            
+            System.out.println("🔐 Senha gerada para " + nome + ": " + senhaGerada);
+            return senhaGerada;
+            
+        } catch (Exception e) {
+            // Em caso de erro, gerar senha aleatória segura
+            String senhaFallback = "user" + new Random().nextInt(9999);
+            System.out.println("⚠️ Erro ao gerar senha, usando fallback: " + senhaFallback);
+            return senhaFallback;
+        }
     }
 
     public abstract String getTipoUsuario();
@@ -105,11 +135,11 @@ public abstract class Usuario implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         Usuario usuario = (Usuario) o;
-        return this.id == usuario.id; // Compara os usuários pelo ID
+        return this.id == usuario.id; 
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id); // Gera um hash code baseado no ID
+        return Integer.hashCode(id); 
     }
 }
