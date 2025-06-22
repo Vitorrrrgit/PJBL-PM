@@ -33,38 +33,38 @@ public class AlterarSenhaDialog extends JDialog {
 
     private void criarInterface() {
         setLayout(new BorderLayout());
-        
+
         // Painel principal com margem
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         // Formulário
         JPanel formulario = new JPanel(new GridLayout(3, 2, 10, 10));
-        
+
         formulario.add(new JLabel("Senha Atual:"));
         formulario.add(txtSenhaAntiga);
-        
+
         formulario.add(new JLabel("Nova Senha:"));
         formulario.add(txtNovaSenha);
-        
+
         formulario.add(new JLabel("Confirmar:"));
         formulario.add(txtConfirmarSenha);
-        
+
         painelPrincipal.add(formulario, BorderLayout.CENTER);
-        
+
         // Botões
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnCancelar = new JButton("Cancelar");
         JButton btnSalvar = new JButton("Salvar");
-        
+
         btnCancelar.addActionListener(e -> dispose());
         btnSalvar.addActionListener(e -> salvarSenha());
-        
+
         painelBotoes.add(btnCancelar);
         painelBotoes.add(btnSalvar);
-        
+
         painelPrincipal.add(painelBotoes, BorderLayout.SOUTH);
-        
+
         add(painelPrincipal);
     }
 
@@ -79,18 +79,21 @@ public class AlterarSenhaDialog extends JDialog {
         }
 
         if (!novaSenha.equals(confirmarSenha)) {
-            JOptionPane.showMessageDialog(this, "Nova senha e confirmação não conferem.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Nova senha e confirmação não conferem.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (novaSenha.length() < 4) {
-            JOptionPane.showMessageDialog(this, "Nova senha deve ter pelo menos 4 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Nova senha deve ter pelo menos 4 caracteres.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
             sistema.alterarSenha(usuarioLogado, senhaAntiga, novaSenha);
-            JOptionPane.showMessageDialog(this, "Senha alterada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Senha alterada com sucesso!", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (SistemaException e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);

@@ -7,7 +7,7 @@ public class Aluno extends Usuario {
     private final String matricula;
     private final Curso curso; // Mudança: agora é objeto Curso
     private final int semestre;
-    private List<Frequencia> frequencias;
+    private final List<Frequencia> frequencias;
 
     public Aluno(int id, String nome, String email, String cpf, String matricula, Curso curso, int semestre) {
         super(id, nome, email, cpf);

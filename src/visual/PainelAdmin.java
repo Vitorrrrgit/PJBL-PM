@@ -77,16 +77,16 @@ public class PainelAdmin extends JPanel {
 
     private void criarInterface() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("👥 Gerenciar Usuários", criarAbaGerenciarUsuarios());
-        tabbedPane.addTab("🎓 Gerenciar Cursos", criarAbaGerenciarCursos());
-        tabbedPane.addTab("📚 Gerenciar Disciplinas", criarAbaGerenciarDisciplinas());
-        tabbedPane.addTab("🏫 Gerenciar Turmas", criarAbaGerenciarTurmas());
-        tabbedPane.addTab("📊 Relatórios", criarAbaRelatorios());
-        tabbedPane.addTab("📁 Importar/Exportar", criarAbaImportarExportar());
+        tabbedPane.addTab(" Gerenciar Usuários", criarAbaGerenciarUsuarios());
+        tabbedPane.addTab(" Gerenciar Cursos", criarAbaGerenciarCursos());
+        tabbedPane.addTab(" Gerenciar Disciplinas", criarAbaGerenciarDisciplinas());
+        tabbedPane.addTab(" Gerenciar Turmas", criarAbaGerenciarTurmas());
+        tabbedPane.addTab(" Relatórios", criarAbaRelatorios());
+        tabbedPane.addTab(" Importar/Exportar", criarAbaImportarExportar());
         
         // Só adiciona aba de perfil no modo standalone
         if (mostrarBotaoLogout) {
-            tabbedPane.addTab("👤 Meu Perfil", criarAbaPerfil());
+            tabbedPane.addTab(" Meu Perfil", criarAbaPerfil());
         }
 
         add(tabbedPane, BorderLayout.CENTER);
@@ -267,10 +267,10 @@ public class PainelAdmin extends JPanel {
         JPanel painelInfo = new JPanel();
         painelInfo.setLayout(new javax.swing.BoxLayout(painelInfo, javax.swing.BoxLayout.Y_AXIS));
         
-        JLabel lblNome = new JLabel("👨‍💼 Administrador: " + admin.getNome());
+        JLabel lblNome = new JLabel(" Administrador: " + admin.getNome());
         lblNome.setFont(new Font("Segoe UI", Font.BOLD, 16));
         
-        JLabel lblEmail = new JLabel("📧 Email: " + admin.getEmail());
+        JLabel lblEmail = new JLabel(" Email: " + admin.getEmail());
         lblEmail.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
         JLabel lblNivel = new JLabel(" Nível de Acesso: TOTAL");
@@ -562,7 +562,7 @@ public class PainelAdmin extends JPanel {
     
     private JPanel criarPainelSair() {
         JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton btnLogout = new JButton("🚪 Logout");
+        JButton btnLogout = new JButton(" Logout");
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnLogout.setPreferredSize(new java.awt.Dimension(100, 35));
         btnLogout.setBackground(new java.awt.Color(231, 76, 60));

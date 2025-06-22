@@ -236,16 +236,16 @@ public class Sistema implements Serializable {
             int proximoId = obterProximoIdFrequencia();
             serializador.carregarFrequenciasDeCSV(caminhoArquivo, this.frequencias, proximoId);
             salvarDados();
-            System.out.println("✅ Frequências importadas com sucesso!");
+            System.out.println(" Frequências importadas com sucesso!");
         } catch (Exception e) {
-            System.err.println("❌ Erro ao importar frequências: " + e.getMessage());
+            System.err.println(" Erro ao importar frequências: " + e.getMessage());
         }
     }
 
     public void exportarFrequenciasCSV(String caminhoArquivo) throws java.io.IOException {
         persistencia.SerializadorJava serializador = new persistencia.SerializadorJava();
         serializador.salvarFrequenciasCSV(caminhoArquivo, this.frequencias);
-        System.out.println("✅ Frequências exportadas para: " + caminhoArquivo);
+        System.out.println(" Frequências exportadas para: " + caminhoArquivo);
     }
 
     // ===== RELATÓRIOS =====
@@ -253,14 +253,14 @@ public class Sistema implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("=== RELATÓRIO GERAL DO SISTEMA ===\n\n");
         
-        sb.append("👥 USUÁRIOS CADASTRADOS: ").append(usuarios.size()).append("\n");
+        sb.append(" USUÁRIOS CADASTRADOS: ").append(usuarios.size()).append("\n");
         sb.append("- Alunos: ").append(usuarios.stream().filter(u -> u instanceof Aluno).count()).append("\n");
         sb.append("- Professores: ").append(usuarios.stream().filter(u -> u instanceof Professor).count()).append("\n");
         sb.append("- Coordenadores: ").append(usuarios.stream().filter(u -> u instanceof Coordenador).count()).append("\n");
         sb.append("- Administradores: ").append(usuarios.stream().filter(u -> u instanceof Administrador).count()).append("\n\n");
         
-        sb.append("📚 TURMAS: ").append(turmas.size()).append("\n");
-        sb.append("📊 FREQUÊNCIAS REGISTRADAS: ").append(frequencias.size()).append("\n\n");
+        sb.append(" TURMAS: ").append(turmas.size()).append("\n");
+        sb.append(" FREQUÊNCIAS REGISTRADAS: ").append(frequencias.size()).append("\n\n");
         
         return sb.toString();
     }
@@ -320,6 +320,25 @@ public class Sistema implements Serializable {
     public String gerarCPF() {
         return String.format("%011d", (long)(Math.random() * 100000000000L));
     }
+    
+    /**
+     * NOVO MÉTODO: Gera um número de matrícula sequencial.
+     * @return Uma String com o próximo número de matrícula disponível.
+     */
+    public String gerarProximaMatricula() {
+        int anoAtual = LocalDate.now().getYear();
+        
+        // Encontra o maior número de matrícula existente
+        long maiorMatricula = usuarios.stream()
+                .filter(u -> u instanceof Aluno)
+                .map(u -> ((Aluno) u).getMatricula())
+                .mapToLong(Long::parseLong) // Converte a matrícula (string) para número
+                .max()
+                .orElse(anoAtual * 1000L); // Se não houver nenhum, começa com ANO + 000
+
+        return String.valueOf(maiorMatricula + 1);
+    }
+
 
     // ===== DADOS INICIAIS =====
     private void criarDadosIniciais() {
@@ -336,8 +355,8 @@ public class Sistema implements Serializable {
             
             // Criar usuários de teste
             Administrador admin = new Administrador(1, "Administrador", "admin@sistema.com", "00000000000", "TOTAL");
-            Professor prof1 = new Professor(2, "Dr. Carlos Silva", "carlos@sistema.com", "11111111111", "Computação", "Doutor");
-            Coordenador coord1 = new Coordenador(3, "Maria Santos", "maria@sistema.com", "22222222222", cc);
+            Professor prof1 = new Professor(2, "Dr. Carlos Alberto", "carlos@sistema.com", "11111111111", "Computação", "Doutor");
+            Coordenador coord1 = new Coordenador(3, "Debora Santos", "debora@sistema.com", "22222222222", cc);
             Aluno aluno1 = new Aluno(4, "Ana Costa", "ana@sistema.com", "33333333333", "2024001", cc, 1);
             Aluno aluno2 = new Aluno(5, "Pedro Silva", "pedro@sistema.com", "44444444444", "2024002", cc, 1);
             
@@ -363,8 +382,8 @@ public class Sistema implements Serializable {
             
             salvarDados();
             
-            System.out.println("✅ Dados iniciais criados!");
-            System.out.println("🔑 Credenciais:");
+            System.out.println(" Dados iniciais criados!");
+            System.out.println(" Credenciais:");
             System.out.println("   Admin: admin@sistema.com / " + admin.getSenha());
             System.out.println("   Professor: carlos@sistema.com / " + prof1.getSenha());
             System.out.println("   Coordenador: maria@sistema.com / " + coord1.getSenha());
@@ -372,7 +391,7 @@ public class Sistema implements Serializable {
             System.out.println("   Aluno 2: pedro@sistema.com / " + aluno2.getSenha());
             
         } catch (Exception e) {
-            System.err.println("❌ Erro ao criar dados iniciais: " + e.getMessage());
+            System.err.println(" Erro ao criar dados iniciais: " + e.getMessage());
             e.printStackTrace();
         }
     }

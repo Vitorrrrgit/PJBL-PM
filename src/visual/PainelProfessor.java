@@ -68,8 +68,8 @@ public class PainelProfessor extends JPanel {
 
     private void criarInterface() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("📝 Registrar Frequência", criarAbaRegistro());
-        tabbedPane.addTab("👤 Meu Perfil", criarAbaPerfil());
+        tabbedPane.addTab(" Registrar Frequência", criarAbaRegistro());
+        tabbedPane.addTab(" Meu Perfil", criarAbaPerfil());
         
         add(tabbedPane, BorderLayout.CENTER);
         
@@ -83,10 +83,10 @@ public class PainelProfessor extends JPanel {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         JPanel painelTopo = new JPanel(new FlowLayout(FlowLayout.LEFT));
         
-        JButton btnSalvar = new JButton("💾 Salvar Frequências da Aula de Hoje");
+        JButton btnSalvar = new JButton(" Salvar Frequências da Aula de Hoje");
         btnSalvar.setFont(new Font("Segoe UI", Font.BOLD, 12));
         
-        painelTopo.add(new JLabel("🏫 Selecione a Turma:"));
+        painelTopo.add(new JLabel(" Selecione a Turma:"));
         painelTopo.add(comboTurmas);
         painelTopo.add(btnSalvar);
 
@@ -106,13 +106,13 @@ public class PainelProfessor extends JPanel {
         JPanel painelInfo = new JPanel();
         painelInfo.setLayout(new javax.swing.BoxLayout(painelInfo, javax.swing.BoxLayout.Y_AXIS));
         
-        JLabel lblNome = new JLabel("👨‍🏫 Professor: " + professor.getNome());
+        JLabel lblNome = new JLabel(" Professor: " + professor.getNome());
         lblNome.setFont(new Font("Segoe UI", Font.BOLD, 16));
         
-        JLabel lblEmail = new JLabel("📧 Email: " + professor.getEmail());
+        JLabel lblEmail = new JLabel(" Email: " + professor.getEmail());
         lblEmail.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
-        JLabel lblArea = new JLabel("🎓 Área: " + professor.getArea());
+        JLabel lblArea = new JLabel(" Área: " + professor.getArea());
         lblArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
         // Estatísticas
@@ -136,7 +136,7 @@ public class PainelProfessor extends JPanel {
         
         // Botão alterar senha (só no modo standalone)
         if (mostrarBotaoLogout) {
-            JButton btnAlterarSenha = new JButton("🔑 Alterar Senha");
+            JButton btnAlterarSenha = new JButton(" Alterar Senha");
             btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             btnAlterarSenha.setPreferredSize(new java.awt.Dimension(150, 35));
             btnAlterarSenha.addActionListener(e -> {
@@ -151,7 +151,7 @@ public class PainelProfessor extends JPanel {
 
     private JPanel criarPainelSair() {
         JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton btnLogout = new JButton("🚪 Logout");
+        JButton btnLogout = new JButton(" Logout");
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnLogout.setPreferredSize(new java.awt.Dimension(100, 35));
         btnLogout.setBackground(new java.awt.Color(231, 76, 60));
@@ -215,7 +215,7 @@ public class PainelProfessor extends JPanel {
         }
         
         JOptionPane.showMessageDialog(this, 
-            String.format("✅ %d registros de frequência salvos com sucesso!\n📅 Data: %s", 
+            String.format(" %d registros de frequência salvos com sucesso!\n Data: %s", 
                 registrosSalvos, LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))), 
             "Sucesso", 
             JOptionPane.INFORMATION_MESSAGE);

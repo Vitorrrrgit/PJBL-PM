@@ -102,7 +102,7 @@ public class LoginWindow extends JFrame {
         painelInfo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         painelInfo.setBackground(new Color(220, 220, 220));
         JLabel lblInfo = new JLabel(
-            "<html><center>Sistema de Frequência Acadêmica<br>" +
+            "<html><center>Sistema de Frequência Acadêmica - POO - 2025<br>" +
             "<b>Alunos:</b> Alana Vasconcelos, Guilherme Montoya e Vitor Henrique</center></html>"
         );
         lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -117,14 +117,8 @@ public class LoginWindow extends JFrame {
     private JLabel criarLabelImagem() {
         // Lista de possíveis locais para a imagem
         String[] possiveisCaminhos = {
-            "src/image/logo.png",
-            "src/image/logo.jpg",
             "src/image/imagempraTentarSistema.png",
-            "image/logo.png",
-            "image/logo.jpg",
             "image/imagempraTentarSistema.png",
-            "logo.png",
-            "logo.jpg"
         };
 
         for (String caminho : possiveisCaminhos) {
@@ -140,11 +134,11 @@ public class LoginWindow extends JFrame {
                     
                     JLabel label = new JLabel(iconeRedimensionado);
                     label.setHorizontalAlignment(SwingConstants.CENTER);
-                    System.out.println("✅ Imagem carregada: " + caminho);
+                    System.out.println(" Imagem carregada: " + caminho);
                     return label;
                 }
             } catch (Exception e) {
-                System.err.println("⚠️ Erro ao carregar imagem " + caminho + ": " + e.getMessage());
+                System.err.println(" Erro ao carregar imagem " + caminho + ": " + e.getMessage());
             }
         }
 
@@ -152,7 +146,7 @@ public class LoginWindow extends JFrame {
         JLabel placeholder = new JLabel("📚");
         placeholder.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
         placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        System.out.println("ℹ️ Nenhuma imagem encontrada. Usando emoji placeholder.");
+        System.out.println(" Nenhuma imagem encontrada. Usando emoji placeholder.");
         return placeholder;
     }
 
@@ -169,8 +163,8 @@ public class LoginWindow extends JFrame {
         String email = txtEmail.getText().trim();
         String senha = new String(txtSenha.getPassword()).trim();
 
-        System.out.println("🔍 TENTATIVA DE LOGIN:");
-        System.out.println("📧 Email: '" + email + "'");
+        System.out.println(" TENTATIVA DE LOGIN:");
+        System.out.println(" Email: '" + email + "'");
 
         if (email.isEmpty() || senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Atenção",
@@ -180,7 +174,7 @@ public class LoginWindow extends JFrame {
 
         try {
             Usuario usuario = sistema.buscarUsuarioPorEmail(email);
-            System.out.println("✅ Usuário encontrado: " + usuario.getNome());
+            System.out.println(" Usuário encontrado: " + usuario.getNome());
 
             if (usuario.getSenha().equals(senha)) {
                 JOptionPane.showMessageDialog(this, "Bem-vindo, " + usuario.getNome() + "!", "Login bem-sucedido",
@@ -191,7 +185,7 @@ public class LoginWindow extends JFrame {
                 throw new SistemaException("Login", email, "Senha incorreta.");
             }
         } catch (SistemaException ex) {
-            System.out.println("❌ Erro de login: " + ex.getMessage());
+            System.out.println(" Erro de login: " + ex.getMessage());
             JOptionPane.showMessageDialog(this, "Erro de Login: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             txtSenha.setText("");
             txtSenha.requestFocus();

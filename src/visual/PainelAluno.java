@@ -47,8 +47,8 @@ public class PainelAluno extends JPanel {
 
     private void criarInterface() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("📊 Minhas Frequências", criarAbaFrequencias());
-        tabbedPane.addTab("👤 Meu Perfil", criarAbaPerfil());
+        tabbedPane.addTab(" Minhas Frequências", criarAbaFrequencias());
+        tabbedPane.addTab(" Meu Perfil", criarAbaPerfil());
         
         add(tabbedPane, BorderLayout.CENTER);
         
@@ -150,7 +150,7 @@ public class PainelAluno extends JPanel {
 
         // Estatísticas de presença
         gbc.gridy = 6; gbc.gridx = 0;
-        JLabel labelPresenca = criarLabel("📈 Percentual de Presença:", true);
+        JLabel labelPresenca = criarLabel(" Percentual de Presença:", true);
         labelPresenca.setFont(new Font("Segoe UI", Font.BOLD, 14));
         painel.add(labelPresenca, gbc);
         
@@ -160,10 +160,10 @@ public class PainelAluno extends JPanel {
         
         if (percentualPresenca < 75.0) {
             valorPresenca.setForeground(new Color(231, 76, 60)); // Vermelho
-            valorPresenca.setText(textoPresenca + " ⚠️ Abaixo do mínimo!");
+            valorPresenca.setText(textoPresenca + "  Abaixo do mínimo!");
         } else {
             valorPresenca.setForeground(new Color(46, 204, 113)); // Verde
-            valorPresenca.setText(textoPresenca + " ✅");
+            valorPresenca.setText(textoPresenca + " OK!");
         }
         painel.add(valorPresenca, gbc);
 
@@ -227,7 +227,7 @@ public class PainelAluno extends JPanel {
         JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelSair.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JButton btnLogout = new JButton("🚪 Logout");
+        JButton btnLogout = new JButton(" Logout");
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnLogout.setPreferredSize(new java.awt.Dimension(100, 35));
         btnLogout.setBackground(new Color(231, 76, 60));
