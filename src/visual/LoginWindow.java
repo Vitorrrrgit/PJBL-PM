@@ -1,6 +1,7 @@
 package visual;
 
 import java.awt.*;
+import java.io.File;
 import javax.swing.*;
 import models.Sistema;
 import models.Usuario;
@@ -13,14 +14,8 @@ public class LoginWindow extends JFrame {
     private JButton btnLogin;
     private JButton btnCancelar;
 
-    /**
-     * --- CORREÇÃO 1: Construtor modificado ---
-     * O construtor agora recebe a instância única do Sistema, em vez de criar uma nova.
-     * @param sistema A instância única do sistema para ser usada pela janela.
-     */
     public LoginWindow(Sistema sistema) {
         super("Sistema de Frequência - Login");
-        // Usa a instância do sistema que foi passada como parâmetro.
         this.sistema = sistema;
 
         configurarJanela();
@@ -43,87 +38,131 @@ public class LoginWindow extends JFrame {
         btnLogin = new JButton("Entrar");
         btnCancelar = new JButton("Cancelar");
 
-        // Estilizando o botão de login para ter mais destaque
+        // Estilizando os botões
         btnLogin.setBackground(Color.BLUE);
         btnLogin.setForeground(Color.WHITE);
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLogin.setOpaque(true);
+        btnLogin.setBorderPainted(false);
+
         btnCancelar.setBackground(Color.RED);
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        // --- LINHAS PARA GARANTIR A COR DE FUNDO DOS BOTÕES ---
-        btnLogin.setOpaque(true);
         btnCancelar.setOpaque(true);
         btnCancelar.setBorderPainted(false);
-        btnLogin.setBorderPainted(false);
     }
 
     private void organizarLayout() {
-        // Painel do Título (Norte)
+        setLayout(new BorderLayout());
+
+        // ===== PAINEL DO TÍTULO E IMAGEM (NORTE) =====
         JPanel painelTitulo = new JPanel(new BorderLayout());
         painelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        // Título
         JLabel lblTitulo = new JLabel("Sistema de Frequência");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        painelTitulo.add(lblTitulo, BorderLayout.CENTER);
+        painelTitulo.add(lblTitulo, BorderLayout.NORTH);
 
-        try {
-            ImageIcon icone = new ImageIcon(getClass().getResource("/image/imagempraTentarSistema.png"));
-            JLabel lblImagem = new JLabel(icone);
-            painelTitulo.add(lblImagem, BorderLayout.SOUTH);
-        } catch (Exception e) {
-            System.err.println("Aviso: Imagem do logo não encontrada.");
+        // IMAGEM - com tratamento de erro
+        JLabel lblImagem = criarLabelImagem();
+        if (lblImagem != null) {
+            painelTitulo.add(lblImagem, BorderLayout.CENTER);
         }
 
-        // Painel do Formulário e Botões (Centro)
+        // ===== PAINEL DO FORMULÁRIO (CENTRO) =====
         JPanel painelFormulario = new JPanel(new GridBagLayout());
         painelFormulario.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Linha 0: Email
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        // Email
+        gbc.gridx = 0; gbc.gridy = 0;
         painelFormulario.add(new JLabel("Email:"), gbc);
         gbc.gridx = 1;
         painelFormulario.add(txtEmail, gbc);
 
-        // Linha 1: Senha
-        gbc.gridx = 0;
-        gbc.gridy = 1;
+        // Senha
+        gbc.gridx = 0; gbc.gridy = 1;
         painelFormulario.add(new JLabel("Senha:"), gbc);
         gbc.gridx = 1;
         painelFormulario.add(txtSenha, gbc);
 
-        // Linha 2: Painel com os botões
-        gbc.gridy = 2;
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
+        // Botões
+        gbc.gridy = 2; gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         painelBotoes.add(btnCancelar);
         painelBotoes.add(btnLogin);
         painelFormulario.add(painelBotoes, gbc);
 
-        // Painel de Informações (Sul)
+        // ===== PAINEL DE INFORMAÇÕES (SUL) =====
         JPanel painelInfo = new JPanel();
         painelInfo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         painelInfo.setBackground(new Color(220, 220, 220));
         JLabel lblInfo = new JLabel(
-                "<html>Projeto de Sistema de Frequência<br>Alunos:<b>Alana Vasconcelos, Guilherme Montoya e Vitor Henrique</b></html>");
+            "<html><center>Sistema de Frequência Acadêmica<br>" +
+            "<b>Alunos:</b> Alana Vasconcelos, Guilherme Montoya e Vitor Henrique</center></html>"
+        );
+        lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
         painelInfo.add(lblInfo);
 
-        // Adicionando os painéis principais à janela
-        setLayout(new BorderLayout());
+        // Adicionar painéis à janela
         add(painelTitulo, BorderLayout.NORTH);
         add(painelFormulario, BorderLayout.CENTER);
         add(painelInfo, BorderLayout.SOUTH);
+    }
+
+    private JLabel criarLabelImagem() {
+        // Lista de possíveis locais para a imagem
+        String[] possiveisCaminhos = {
+            "src/image/logo.png",
+            "src/image/logo.jpg",
+            "src/image/imagempraTentarSistema.png",
+            "image/logo.png",
+            "image/logo.jpg",
+            "image/imagempraTentarSistema.png",
+            "logo.png",
+            "logo.jpg"
+        };
+
+        for (String caminho : possiveisCaminhos) {
+            try {
+                File arquivo = new File(caminho);
+                if (arquivo.exists()) {
+                    ImageIcon icone = new ImageIcon(caminho);
+                    
+                    // Redimensionar a imagem se necessário
+                    Image img = icone.getImage();
+                    Image imgRedimensionada = img.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
+                    ImageIcon iconeRedimensionado = new ImageIcon(imgRedimensionada);
+                    
+                    JLabel label = new JLabel(iconeRedimensionado);
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                    System.out.println("✅ Imagem carregada: " + caminho);
+                    return label;
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ Erro ao carregar imagem " + caminho + ": " + e.getMessage());
+            }
+        }
+
+        // Se não encontrou nenhuma imagem, cria um placeholder
+        JLabel placeholder = new JLabel("📚");
+        placeholder.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
+        placeholder.setHorizontalAlignment(SwingConstants.CENTER);
+        System.out.println("ℹ️ Nenhuma imagem encontrada. Usando emoji placeholder.");
+        return placeholder;
     }
 
     private void adicionarListeners() {
         btnLogin.addActionListener(_ -> fazerLogin());
         btnCancelar.addActionListener(_ -> System.exit(0));
         txtSenha.addActionListener(_ -> fazerLogin());
+        
+        // Enter no campo email vai para senha
+        txtEmail.addActionListener(_ -> txtSenha.requestFocus());
     }
 
     private void fazerLogin() {
@@ -131,8 +170,7 @@ public class LoginWindow extends JFrame {
         String senha = new String(txtSenha.getPassword()).trim();
 
         System.out.println("🔍 TENTATIVA DE LOGIN:");
-        System.out.println("📧 Email digitado: '" + email + "'");
-        System.out.println("🔑 Senha digitada: '" + senha + "'");
+        System.out.println("📧 Email: '" + email + "'");
 
         if (email.isEmpty() || senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Atenção",
@@ -143,21 +181,12 @@ public class LoginWindow extends JFrame {
         try {
             Usuario usuario = sistema.buscarUsuarioPorEmail(email);
             System.out.println("✅ Usuário encontrado: " + usuario.getNome());
-            System.out.println("🔑 Senha no sistema: '" + usuario.getSenha() + "'");
-            System.out.println("🔍 Senhas são iguais? " + usuario.getSenha().equals(senha));
 
             if (usuario.getSenha().equals(senha)) {
                 JOptionPane.showMessageDialog(this, "Bem-vindo, " + usuario.getNome() + "!", "Login bem-sucedido",
                         JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
-
-                /**
-                 * --- CORREÇÃO 2: Passar a instância existente do Sistema ---
-                 * A MainWindow (e seu construtor) também precisa ser ajustada para receber
-                 * a instância do sistema.
-                 */
                 new MainWindow(sistema, usuario).setVisible(true);
-
             } else {
                 throw new SistemaException("Login", email, "Senha incorreta.");
             }

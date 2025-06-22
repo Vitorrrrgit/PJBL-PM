@@ -1,4 +1,4 @@
-# Arquivos compilados Java
+# ===== ARQUIVOS COMPILADOS JAVA =====
 *.class
 *.jar
 *.war
@@ -7,31 +7,109 @@
 *.tar.gz
 *.rar
 
-# Arquivos do IDE
-.vscode/
+# ===== IDES =====
+# IntelliJ IDEA
 .idea/
 *.iml
 *.ipr
 *.iws
 
-# Arquivos de sistema
-.DS_Store
-Thumbs.db
+# Eclipse
+.settings/
+.project
+.classpath
+.factorypath
+.buildpath
+.metadata/
 
-# Pasta de dados do sistema (arquivos .ser)
+# Visual Studio Code
+.vscode/
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
+
+# ===== ARQUIVOS DE SISTEMA =====
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===== PROJETO ESPECÍFICO =====
+# Pasta de dados do sistema
 dados/
 *.ser
 
-# Logs
-*.log
+# ===== BUILD E DEPENDÊNCIAS =====
+target/         # Maven
+build/          # Gradle
+dist/           # Distribuição
+out/            # IntelliJ/IDE output
+bin/            # Binários
+classes/        # Classes compiladas
+generated/      # Código gerado
 
-# Arquivos temporários
+# Maven/Gradle (futuro)
+.m2/
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# ===== LOGS E TEMPORÁRIOS =====
+*.log
+logs/
+log/
 *.tmp
 *.temp
-*~
+*.bak
+*.backup
+*.orig
+*.rej
+*.swp
+*.swo
+.#*
+\#*#
 
-# Arquivos de build
-target/
-build/
-dist/
-out/
+# ===== CONFIGURAÇÕES SENSÍVEIS =====
+config.properties
+application-local.properties
+*.env
+.env
+
+# ===== CACHE E RUNTIME =====
+.cache/
+*.pid
+*.seed
+*.pid.lock
+
+# ===== TESTE E DOCUMENTAÇÃO =====
+test-output/
+*.test
+coverage/
+javadoc/
+docs/generated/

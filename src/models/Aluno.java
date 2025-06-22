@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Aluno extends Usuario {
     private final String matricula;
-    private final String curso;
+    private final Curso curso; // Mudança: agora é objeto Curso
     private final int semestre;
     private List<Frequencia> frequencias;
 
-    public Aluno(int id, String nome, String email, String cpf, String matricula, String curso, int semestre) {
+    public Aluno(int id, String nome, String email, String cpf, String matricula, Curso curso, int semestre) {
         super(id, nome, email, cpf);
         this.matricula = matricula;
         this.curso = curso;
@@ -46,7 +46,7 @@ public class Aluno extends Usuario {
 
     // Getters e Setters
     public String getMatricula() { return matricula; }
-    public String getCurso() { return curso; }
+    public Curso getCurso() { return curso; } // Retorna objeto Curso
     public int getSemestre() { return semestre; }
     public List<Frequencia> getFrequencias() { return new ArrayList<>(frequencias); }
 }

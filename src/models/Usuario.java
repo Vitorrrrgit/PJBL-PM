@@ -12,6 +12,7 @@ public abstract class Usuario implements Serializable {
     protected String email;
     protected String cpf;
     protected String senha;
+    protected boolean ativo;
 
     public Usuario(int id, String nome, String email, String cpf) {
         this.id = id;
@@ -19,6 +20,12 @@ public abstract class Usuario implements Serializable {
         this.email = email;
         this.cpf = cpf;
         this.senha = gerarSenhaInicial(nome);
+        this.ativo = true;
+    }
+
+    // Construtor vazio para serialização
+    public Usuario() {
+        this.ativo = true;
     }
 
     private String gerarSenhaInicial(String nome) {
@@ -30,21 +37,51 @@ public abstract class Usuario implements Serializable {
         return primeiraLetra + digitos + "!";
     }
 
-    // --- GETTERS E SETTERS ---
+    // ======= MÉTODOS ABSTRATOS QUE TODAS AS SUBCLASSES DEVEM IMPLEMENTAR =======
+    public abstract String getTipoUsuario();
+    public abstract String[] getPermissoes();
+    public abstract String gerarRelatorioPersonalizado();
+    public abstract boolean podeGerenciarUsuarios();
+    public abstract boolean podeVerRelatoriosCompletos();
+    public abstract boolean podeExportarDados();
+    public abstract boolean podeEditarFrequencia();
+
+    // ======= MÉTODO CONCRETO (PODE SER SOBRESCRITO) =======
+    public String getDescricaoCompleta() {
+        return String.format("%s (%s) - %s", nome, getTipoUsuario(), email);
+    }
+
+    // ======= GETTERS E SETTERS =======
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNome() {
         return nome;
     }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getCpf() {
         return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getSenha() {
@@ -55,23 +92,30 @@ public abstract class Usuario implements Serializable {
         this.senha = senha;
     }
 
-    // --- MÉTODOS ABSTRATOS DE PERMISSÃO (RESTAURADOS) ---
-    public abstract String getTipoUsuario();
+    public boolean isAtivo() {
+        return ativo;
+    }
 
-    public abstract String[] getPermissoes();
-
-    public abstract String gerarRelatorioPersonalizado();
-
-    public abstract boolean podeGerenciarUsuarios();
-
-    public abstract boolean podeVerRelatoriosCompletos();
-
-    public abstract boolean podeExportarDados();
-
-    public abstract boolean podeEditarFrequencia();
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     @Override
     public String toString() {
         return nome; // Usado para exibição em JComboBox
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        
+        Usuario usuario = (Usuario) obj;
+        return id == usuario.id || (cpf != null && cpf.equals(usuario.cpf));
+    }
+
+    @Override
+    public int hashCode() {
+        return cpf != null ? cpf.hashCode() : Integer.hashCode(id);
     }
 }

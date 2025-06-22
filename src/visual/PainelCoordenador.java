@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -34,7 +35,7 @@ public class PainelCoordenador extends JPanel {
         setLayout(new BorderLayout(10, 10));
 
         // Filtra as turmas para mostrar apenas as do curso do coordenador
-        List<Turma> turmasDoCurso = sistema.buscarTurmasPorCurso(coordenador.getCurso());
+        List<Turma> turmasDoCurso = sistema.buscarTurmasPorCurso(coordenador.getCurso().getNome());
         this.comboTurmas = new JComboBox<>(turmasDoCurso.toArray(new Turma[0]));
 
         // Adiciona a coluna "Professor" na tabela
@@ -68,12 +69,17 @@ public class PainelCoordenador extends JPanel {
 
     private JPanel criarAbaPerfil() {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        JButton btnAlterarSenha = new JButton("Alterar Minha Senha");
-        btnAlterarSenha.addActionListener(
-                _ -> new AlterarSenhaDialog((Frame) SwingUtilities.getWindowAncestor(this), sistema, this.coordenador)
-                        .setVisible(true));
-        painel.add(new JLabel("Logado como: " + coordenador.getNome()));
+        
+        // PADRONIZAR COM OS OUTROS PAINÉIS
+        JButton btnAlterarSenha = new JButton("Alterar Senha");
+        btnAlterarSenha.addActionListener(_ -> 
+            new AlterarSenhaDialog((Frame) SwingUtilities.getWindowAncestor(this), sistema, coordenador).setVisible(true)
+        );
+        
+        painel.add(new JLabel("Usuário: " + coordenador.getNome()));
+        painel.add(new JLabel(" | Coordenador do curso: " + coordenador.getCurso().getNome()));
         painel.add(btnAlterarSenha);
+        
         return painel;
     }
 
@@ -99,7 +105,7 @@ public class PainelCoordenador extends JPanel {
                     // Adiciona a linha na tabela com o nome do professor
                     tableModelFrequencias.addRow(new Object[] {
                             f.getDataFormatada(),
-                            nomeProfessor, // <- Nome do professor adicionado aqui
+                            nomeProfessor,
                             nomeAluno,
                             f.getAlunoMatricula(),
                             f.getStatus(),
@@ -111,15 +117,24 @@ public class PainelCoordenador extends JPanel {
     }
 
     private JPanel criarPainelSair() {
-        JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnLogout = new JButton("Logout");
+        
         btnLogout.addActionListener(_ -> {
-            Window janela = SwingUtilities.getWindowAncestor(this);
-            if (janela != null)
-                janela.dispose();
-            new LoginWindow(sistema).setVisible(true);
+            int confirmacao = JOptionPane.showConfirmDialog(
+                this, 
+                "Deseja realmente fazer logout?", 
+                "Confirmar Saída", 
+                JOptionPane.YES_NO_OPTION
+            );
+            if (confirmacao == JOptionPane.YES_OPTION) {
+                Window janela = SwingUtilities.getWindowAncestor(this);
+                if (janela != null) janela.dispose();
+                new LoginWindow(sistema).setVisible(true);
+            }
         });
-        painel.add(btnLogout);
-        return painel;
+        
+        painelSair.add(btnLogout);
+        return painelSair;
     }
 }

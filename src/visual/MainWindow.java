@@ -6,7 +6,7 @@ import models.*;
 public class MainWindow extends JFrame {
 
     /**
-     * --- CORREÇÃO: Construtor modificado ---
+     * Construtor da janela principal do sistema
      * @param sistema A instância única do sistema.
      * @param usuarioLogado O usuário que fez o login.
      */
@@ -16,11 +16,9 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // REMOVE a criação de uma nova instância. Usa a que foi recebida.
-        // Sistema sistema = new Sistema(); 
         JPanel painelPrincipal;
 
-        // Lógica central que decide qual painel carregar
+        // Lógica central que decide qual painel carregar baseado no tipo de usuário
         switch (usuarioLogado) {
             case Aluno aluno -> {
                 painelPrincipal = new PainelAluno(sistema, aluno);
@@ -36,7 +34,7 @@ public class MainWindow extends JFrame {
             }
             case Administrador admin -> {
                 painelPrincipal = new PainelAdmin(sistema, admin);
-                setTitle("Painel Administrativo");
+                setTitle("Painel Administrativo - " + admin.getNome());
             }
             default -> {
                 painelPrincipal = new JPanel();

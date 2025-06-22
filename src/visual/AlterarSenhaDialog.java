@@ -6,8 +6,6 @@ import models.Sistema;
 import models.Usuario;
 import persistencia.SistemaException;
 
- // ALTERAR SENHA USUARIO LOGADO
-
 public class AlterarSenhaDialog extends JDialog {
 
     private final Sistema sistema;
@@ -18,57 +16,75 @@ public class AlterarSenhaDialog extends JDialog {
     private final JPasswordField txtConfirmarSenha = new JPasswordField(20);
 
     public AlterarSenhaDialog(Frame owner, Sistema sistema, Usuario usuarioLogado) {
-        super(owner, "Alterar Minha Senha", true);
+        super(owner, "Alterar Senha", true);
         this.sistema = sistema;
         this.usuarioLogado = usuarioLogado;
 
-        setLayout(new BorderLayout(10, 10));
-        add(criarFormulario(), BorderLayout.CENTER);
-        add(criarPainelBotoes(), BorderLayout.SOUTH);
-
-        pack();
-        setLocationRelativeTo(owner);
+        criarInterface();
+        configurarJanela();
     }
 
-    private JPanel criarFormulario() {
-        JPanel painel = new JPanel(new GridBagLayout());
-        painel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        gbc.gridy = 0; gbc.gridx = 0; painel.add(new JLabel("Senha Atual:"), gbc);
-        gbc.gridx = 1; painel.add(txtSenhaAntiga, gbc);
-
-        gbc.gridy = 1; gbc.gridx = 0; painel.add(new JLabel("Nova Senha:"), gbc);
-        gbc.gridx = 1; painel.add(txtNovaSenha, gbc);
-
-        gbc.gridy = 2; gbc.gridx = 0; painel.add(new JLabel("Confirmar Nova Senha:"), gbc);
-        gbc.gridx = 1; painel.add(txtConfirmarSenha, gbc);
-
-        return painel;
+    private void configurarJanela() {
+        setSize(400, 220);
+        setLocationRelativeTo(getOwner());
+        setResizable(false);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     }
 
-    private JPanel criarPainelBotoes() {
-        JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton btnSalvar = new JButton("Salvar");
+    private void criarInterface() {
+        setLayout(new BorderLayout());
+        
+        // Painel principal com margem
+        JPanel painelPrincipal = new JPanel(new BorderLayout());
+        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Formulário
+        JPanel formulario = new JPanel(new GridLayout(3, 2, 10, 10));
+        
+        formulario.add(new JLabel("Senha Atual:"));
+        formulario.add(txtSenhaAntiga);
+        
+        formulario.add(new JLabel("Nova Senha:"));
+        formulario.add(txtNovaSenha);
+        
+        formulario.add(new JLabel("Confirmar:"));
+        formulario.add(txtConfirmarSenha);
+        
+        painelPrincipal.add(formulario, BorderLayout.CENTER);
+        
+        // Botões
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnCancelar = new JButton("Cancelar");
-
-        btnSalvar.addActionListener(_ -> salvarNovaSenha());
-        btnCancelar.addActionListener(_ -> dispose());
-
-        painel.add(btnCancelar);
-        painel.add(btnSalvar);
-        return painel;
+        JButton btnSalvar = new JButton("Salvar");
+        
+        btnCancelar.addActionListener(e -> dispose());
+        btnSalvar.addActionListener(e -> salvarSenha());
+        
+        painelBotoes.add(btnCancelar);
+        painelBotoes.add(btnSalvar);
+        
+        painelPrincipal.add(painelBotoes, BorderLayout.SOUTH);
+        
+        add(painelPrincipal);
     }
 
-    private void salvarNovaSenha() {
+    private void salvarSenha() {
         String senhaAntiga = new String(txtSenhaAntiga.getPassword());
         String novaSenha = new String(txtNovaSenha.getPassword());
         String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
+        if (senhaAntiga.isEmpty() || novaSenha.isEmpty() || confirmarSenha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (!novaSenha.equals(confirmarSenha)) {
-            JOptionPane.showMessageDialog(this, "A 'Nova Senha' e a 'Confirmação' não são iguais.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Nova senha e confirmação não conferem.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (novaSenha.length() < 4) {
+            JOptionPane.showMessageDialog(this, "Nova senha deve ter pelo menos 4 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -77,8 +93,7 @@ public class AlterarSenhaDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Senha alterada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (SistemaException e) {
-            JOptionPane.showMessageDialog(this, "Não foi possível alterar a senha: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        
     }
 }

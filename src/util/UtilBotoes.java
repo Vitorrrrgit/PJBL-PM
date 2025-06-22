@@ -1,0 +1,237 @@
+package util;
+
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * Utilitário para aplicar cores em botões Swing sem complicações
+ * Resolve todos os problemas comuns do Swing automaticamente
+ */
+public class UtilBotoes {
+    
+    /**
+     * Aplica uma cor de fundo ao botão de forma simples
+     * @param botao O botão a ser colorido
+     * @param cor A cor de fundo desejada
+     */
+    public static void aplicarCor(JButton botao, Color cor) {
+        aplicarCor(botao, cor, Color.WHITE);
+    }
+    
+    /**
+     * Aplica cor de fundo e texto ao botão
+     * @param botao O botão a ser colorido
+     * @param corFundo A cor de fundo
+     * @param corTexto A cor do texto
+     */
+    public static void aplicarCor(JButton botao, Color corFundo, Color corTexto) {
+        // RESOLVE TODOS OS PROBLEMAS DO SWING:
+        botao.setBackground(corFundo);
+        botao.setForeground(corTexto);
+        botao.setOpaque(true);              // ESSENCIAL para mostrar a cor
+        botao.setBorderPainted(false);      // Remove borda padrão
+        botao.setFocusPainted(false);       // Remove foco visual
+        botao.setContentAreaFilled(true);   // Garante que o fundo seja pintado
+    }
+    
+    /**
+     * Aplica cor com efeito hover automático
+     * @param botao O botão a ser colorido
+     * @param cor A cor de fundo (hover será automático)
+     */
+    public static void aplicarCorComHover(JButton botao, Color cor) {
+        aplicarCorComHover(botao, cor, Color.WHITE);
+    }
+    
+    /**
+     * Aplica cor com efeito hover automático
+     * @param botao O botão a ser colorido
+     * @param corFundo A cor de fundo
+     * @param corTexto A cor do texto
+     */
+    public static void aplicarCorComHover(JButton botao, Color corFundo, Color corTexto) {
+        // Aplica a cor base
+        aplicarCor(botao, corFundo, corTexto);
+        
+        // Adiciona efeito hover automático
+        Color corOriginal = corFundo;
+        botao.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                botao.setBackground(corOriginal.darker()); // Escurece no hover
+            }
+            
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                botao.setBackground(corOriginal); // Volta à cor original
+            }
+        });
+    }
+    
+    // ========================================
+    // CORES PRÉ-DEFINIDAS PARA USAR
+    // ========================================
+    
+    public static final Color AZUL = new Color(52, 152, 219);
+    public static final Color VERDE = new Color(46, 204, 113);
+    public static final Color VERMELHO = new Color(231, 76, 60);
+    public static final Color LARANJA = new Color(230, 126, 34);
+    public static final Color ROXO = new Color(155, 89, 182);
+    public static final Color TURQUESA = new Color(26, 188, 156);
+    public static final Color AMARELO = new Color(241, 196, 15);
+    public static final Color CINZA = new Color(149, 165, 166);
+    public static final Color CINZA_ESCURO = new Color(52, 73, 94);
+    
+    // Métodos de conveniência para cores comuns
+    public static void azul(JButton botao) { aplicarCorComHover(botao, AZUL); }
+    public static void verde(JButton botao) { aplicarCorComHover(botao, VERDE); }
+    public static void vermelho(JButton botao) { aplicarCorComHover(botao, VERMELHO); }
+    public static void laranja(JButton botao) { aplicarCorComHover(botao, LARANJA); }
+    public static void roxo(JButton botao) { aplicarCorComHover(botao, ROXO); }
+    public static void turquesa(JButton botao) { aplicarCorComHover(botao, TURQUESA); }
+    public static void amarelo(JButton botao) { aplicarCorComHover(botao, AMARELO, Color.BLACK); }
+    public static void cinza(JButton botao) { aplicarCorComHover(botao, CINZA); }
+}
+
+/*// ========================================
+// APLICAÇÃO SIMPLES NO SEU CÓDIGO EXISTENTE
+// ========================================
+
+// NO SEU PainelProfessor.java ATUAL, apenas ADICIONE estas linhas:
+
+package visual;
+
+import util.UtilBotoes; // <- ADICIONAR ESTE IMPORT
+
+public class PainelProfessor extends JPanel {
+    
+    // Todo o seu código existente...
+    
+    private JPanel criarAbaRegistro() {
+        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painelTopo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        JButton btnSalvar = new JButton("💾 Salvar Frequências da Aula de Hoje");
+        btnSalvar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        
+        // ✅ ADICIONAR APENAS ESTA LINHA:
+        UtilBotoes.verde(btnSalvar);
+        
+        painelTopo.add(new JLabel("🏫 Selecione a Turma:"));
+        painelTopo.add(comboTurmas);
+        painelTopo.add(btnSalvar);
+
+        comboTurmas.addActionListener(e -> atualizarTabelaAlunos());
+        btnSalvar.addActionListener(e -> salvarFrequencias());
+
+        painel.add(painelTopo, BorderLayout.NORTH);
+        painel.add(new JScrollPane(tabelaAlunos), BorderLayout.CENTER);
+        
+        return painel;
+    }
+    
+    private JPanel criarAbaPerfil() {
+        JPanel painel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        
+        // Todo o código das informações do professor...
+        
+        if (mostrarBotaoLogout) {
+            JButton btnAlterarSenha = new JButton("🔑 Alterar Senha");
+            btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            btnAlterarSenha.setPreferredSize(new java.awt.Dimension(150, 35));
+            
+            // ✅ ADICIONAR APENAS ESTA LINHA:
+            UtilBotoes.azul(btnAlterarSenha);
+            
+            btnAlterarSenha.addActionListener(e -> {
+                Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
+                new AlterarSenhaDialog(parent, sistema, professor).setVisible(true);
+            });
+            painel.add(btnAlterarSenha);
+        }
+        
+        return painel;
+    }
+
+    private JPanel criarPainelSair() {
+        JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnLogout = new JButton("🚪 Logout");
+        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnLogout.setPreferredSize(new java.awt.Dimension(100, 35));
+        
+        // ✅ REMOVER ESTAS LINHAS (se existirem):
+        // btnLogout.setBackground(new java.awt.Color(231, 76, 60));
+        // btnLogout.setForeground(java.awt.Color.WHITE);
+        // btnLogout.setBorderPainted(false);
+        // btnLogout.setFocusPainted(false);
+        
+        // ✅ ADICIONAR APENAS ESTA LINHA:
+        UtilBotoes.vermelho(btnLogout);
+
+        btnLogout.addActionListener(e -> {
+            // lógica do logout...
+        });
+
+        painelSair.add(btnLogout);
+        return painelSair;
+    }
+}
+
+// ========================================
+// RESUMO DO QUE FAZER:
+// ========================================
+
+// 1. ✅ Criar arquivo: src/util/UtilBotoes.java (copiar do artefato)
+
+// 2. ✅ Em cada arquivo de painel, adicionar:
+//    import util.UtilBotoes;
+
+// 3. ✅ Para cada botão, ADICIONAR uma linha:
+//    UtilBotoes.verde(btnSalvar);     // Para botão de salvar
+//    UtilBotoes.azul(btnAlterar);     // Para botão de alterar
+//    UtilBotoes.vermelho(btnLogout);  // Para botão de logout
+//    UtilBotoes.laranja(btnExportar); // Para botão de exportar
+//    UtilBotoes.roxo(btnEspecial);    // Para botão especial
+
+// 4. ✅ REMOVER linhas antigas (se existirem):
+//    btnX.setBackground(...)
+//    btnX.setOpaque(true)
+//    btnX.setBorderPainted(false)
+//    btnX.setFocusPainted(false)
+
+// 5. ✅ Compilar: javac *.java
+
+// ========================================
+// RESULTADO:
+// ========================================
+
+// ✅ Botões com cores vibrantes
+// ✅ Efeito hover automático
+// ✅ Sem erros do Swing
+// ✅ Código mais limpo
+// ✅ Fácil de alterar cores (só trocar verde() por azul())
+
+// ========================================
+// CORES DISPONÍVEIS:
+// ========================================
+
+UtilBotoes.azul(botao);      // Azul profissional
+UtilBotoes.verde(botao);     // Verde de sucesso
+UtilBotoes.vermelho(botao);  // Vermelho de ação/perigo
+UtilBotoes.laranja(botao);   // Laranja de aviso
+UtilBotoes.roxo(botao);      // Roxo moderno
+UtilBotoes.turquesa(botao);  // Turquesa elegante
+UtilBotoes.amarelo(botao);   // Amarelo (texto preto)
+UtilBotoes.cinza(botao);     // Cinza neutro
+
+// ========================================
+// EXEMPLO DE MUDANÇA RÁPIDA:
+// ========================================
+
+// Para mudar todos os botões para tema roxo:
+// Procure por: UtilBotoes.azul(
+// Substitua por: UtilBotoes.roxo(
+
+// Para voltar ao tema original:
+// Procure por: UtilBotoes.roxo(
+// Substitua por: UtilBotoes.azul( */
