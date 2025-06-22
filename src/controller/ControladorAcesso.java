@@ -1,9 +1,9 @@
-package controller; 
+package controller;
 
-import models.*; 
+import models.Usuario;
 
 public class ControladorAcesso {
-    private Usuario usuarioLogado;
+    private final Usuario usuarioLogado;
 
     public ControladorAcesso(Usuario usuarioLogado) {
         if (usuarioLogado == null) {
@@ -27,7 +27,7 @@ public class ControladorAcesso {
     public boolean podeRegistrarFrequencia() {
         return usuarioLogado.podeEditarFrequencia();
     }
-    
+
     public Usuario getUsuarioLogado() {
         return usuarioLogado;
     }

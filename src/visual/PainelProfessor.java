@@ -1,18 +1,34 @@
 package visual;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Window;
 import java.time.LocalDate;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import models.*;
+import models.Aluno;
+import models.Frequencia;
+import models.Professor;
+import models.Sistema;
+import models.Turma;
+import persistencia.SistemaException;
 
 public class PainelProfessor extends JPanel {
 
     private final Sistema sistema;
     private final Professor professor;
     private final JComboBox<Turma> comboTurmas;
-    private final JTable tabelaAlunos;
+    private final JTable tabelaAlunos; // <- Variável de instância
     private final DefaultTableModel tableModel;
 
     public PainelProfessor(Sistema sistema, Professor professor) {
@@ -26,16 +42,19 @@ public class PainelProfessor extends JPanel {
             public Class<?> getColumnClass(int col) {
                 return col == 2 ? Boolean.class : String.class;
             }
-
             @Override
             public boolean isCellEditable(int row, int col) {
                 return col == 2;
             }
         };
+        
+        // --- CORREÇÃO AQUI ---
+        // Inicializa a variável de instância, em vez de criar uma local.
         this.tabelaAlunos = new JTable(tableModel);
 
         List<Turma> turmasDoProfessor = sistema.buscarTurmasPorProfessor(professor);
-        this.comboTurmas = new JComboBox<>(turmasDoProfessor.toArray(Turma[]::new));
+        this.comboTurmas = new JComboBox<>(turmasDoProfessor.toArray(Turma[]::new)); // Correção do "hint"
+        
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Registrar Frequência", criarAbaRegistro());
         tabbedPane.addTab("Meu Perfil", criarAbaPerfil());
@@ -47,10 +66,10 @@ public class PainelProfessor extends JPanel {
 
     private JPanel criarAbaRegistro() {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
-        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JPanel painelTopo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
         JButton btnSalvar = new JButton("Salvar Frequências da Aula de Hoje");
-
+        
         painelTopo.add(new JLabel("Selecione a Turma:"));
         painelTopo.add(comboTurmas);
         painelTopo.add(btnSalvar);
@@ -58,6 +77,7 @@ public class PainelProfessor extends JPanel {
         comboTurmas.addActionListener(_ -> atualizarTabelaAlunos());
         btnSalvar.addActionListener(_ -> salvarFrequencias());
 
+        // A variável tabelaAlunos agora está acessível aqui
         painel.add(painelTopo, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaAlunos), BorderLayout.CENTER);
         return painel;
@@ -76,25 +96,16 @@ public class PainelProfessor extends JPanel {
 
     private JPanel criarPainelSair() {
         JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        painelSair.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
         JButton btnLogout = new JButton("Logout");
 
         btnLogout.addActionListener(_ -> {
-            int confirmacao = JOptionPane.showConfirmDialog(
-                    this,
-                    "Deseja realmente fazer logout e voltar para a tela de login?",
-                    "Confirmar Saída",
-                    JOptionPane.YES_NO_OPTION);
-
+            int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja realmente fazer logout?", "Confirmar Saída", JOptionPane.YES_NO_OPTION);
             if (confirmacao == JOptionPane.YES_OPTION) {
                 Window janelaPrincipal = SwingUtilities.getWindowAncestor(this);
-
                 if (janelaPrincipal != null) {
                     janelaPrincipal.dispose();
                 }
-
-                new LoginWindow().setVisible(true);
+                new LoginWindow(sistema).setVisible(true);
             }
         });
 
@@ -105,7 +116,7 @@ public class PainelProfessor extends JPanel {
     private void atualizarTabelaAlunos() {
         tableModel.setRowCount(0);
         Turma turmaSelecionada = (Turma) comboTurmas.getSelectedItem();
-        if (turmaSelecionada != null) {
+        if (turmaSelecionada != null && turmaSelecionada.getAlunosMatriculados() != null) {
             for (Aluno aluno : turmaSelecionada.getAlunosMatriculados()) {
                 tableModel.addRow(new Object[] { aluno.getMatricula(), aluno.getNome(), true });
             }
@@ -120,41 +131,23 @@ public class PainelProfessor extends JPanel {
         }
         
         int registrosSalvos = 0;
-        
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String matricula = (String) tableModel.getValueAt(i, 0);
-            boolean presente = (boolean) tableModel.getValueAt(i, 2);
-            
-            // CORREÇÃO: Usar o método correto de geração de ID
-            int novoId = sistema.obterProximoIdFrequencia();
-            
-            Frequencia freq = new Frequencia(
-                novoId, 
-                matricula, 
-                professor.getCpf(),
-                turmaSelecionada.getNomeDisciplina(), 
-                LocalDate.now(), 
-                presente, 
-                presente ? "" : "Falta registrada pelo professor"
-            );
-            
             try {
+                String matricula = (String) tableModel.getValueAt(i, 0);
+                boolean presente = (boolean) tableModel.getValueAt(i, 2);
+                int novoId = sistema.obterProximoIdFrequencia();
+                
+                Frequencia freq = new Frequencia(novoId, matricula, professor.getCpf(),
+                        turmaSelecionada.getNomeDisciplina(), LocalDate.now(), presente,
+                        presente ? "" : "Falta registrada pelo professor");
+                
                 sistema.adicionarFrequencia(freq);
                 registrosSalvos++;
-            } catch (persistencia.SistemaException ex) {
-                System.err.println("Erro ao salvar frequência para matrícula " + matricula + ": " + ex.getMessage());
+            } catch (SistemaException ex) {
+                System.err.println("Erro ao salvar frequência: " + ex.getMessage());
             }
         }
         
-        if (registrosSalvos > 0) {
-            JOptionPane.showMessageDialog(this, 
-                "Frequências salvas com sucesso!\n" + 
-                "Total de registros: " + registrosSalvos + " alunos\n" +
-                "Data: " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
-                "Sucesso", 
-                JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Nenhuma frequência foi salva.", "Atenção", JOptionPane.WARNING_MESSAGE);
-        }
+        JOptionPane.showMessageDialog(this, registrosSalvos + " registros de frequência salvos com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 }

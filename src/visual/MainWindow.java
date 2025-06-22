@@ -5,13 +5,19 @@ import models.*;
 
 public class MainWindow extends JFrame {
 
-    public MainWindow(Usuario usuarioLogado) {
+    /**
+     * --- CORREÇÃO: Construtor modificado ---
+     * @param sistema A instância única do sistema.
+     * @param usuarioLogado O usuário que fez o login.
+     */
+    public MainWindow(Sistema sistema, Usuario usuarioLogado) {
         super("Sistema de Frequência");
         setSize(950, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        Sistema sistema = new Sistema();
+        // REMOVE a criação de uma nova instância. Usa a que foi recebida.
+        // Sistema sistema = new Sistema(); 
         JPanel painelPrincipal;
 
         // Lógica central que decide qual painel carregar
@@ -33,13 +39,11 @@ public class MainWindow extends JFrame {
                 setTitle("Painel Administrativo");
             }
             default -> {
-                // Caso de erro, se o tipo de usuário for desconhecido
                 painelPrincipal = new JPanel();
                 painelPrincipal.add(new JLabel("Erro: Tipo de usuário não reconhecido."));
             }
         }
 
         add(painelPrincipal);
-        setVisible(true);
     }
 }

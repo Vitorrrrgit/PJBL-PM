@@ -2,68 +2,55 @@ package persistencia;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import models.*;
+import models.Frequencia;
 
 public class SerializadorJava {
 
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // FORMATO ESPERADO NO CSV:
-    // TIPO;ID;NOME;EMAIL;CPF;CAMPO1;CAMPO2;CAMPO3
-    // Aluno;1;Ana Silva;ana@email.com;111;MAT-01;Engenharia;2
-    // Professor;2;Carlos;carlos@email.com;222;Cálculo;Doutorado;
-    // Frequencia;101;MAT-01;222;Cálculo I;17/06/2025;true;
-
-    public void carregarDeCSV(String caminhoArquivo, List<Usuario> usuarios, List<Frequencia> frequencias) {
+    public void carregarFrequenciasDeCSV(String caminhoArquivo, List<Frequencia> frequencias, int proximoId) {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
+            br.readLine(); // Pula a linha do cabeçalho
             while ((linha = br.readLine()) != null) {
-                if (linha.trim().isEmpty()) continue;
-                String[] campos = linha.split(";");
-                if (campos.length == 0) continue;
-
-                String tipo = campos[0];
-                try {
-                    if (tipo.equalsIgnoreCase("Aluno") || tipo.equalsIgnoreCase("Professor")) {
-                        Usuario novoUsuario = processarLinhaUsuario(campos);
-                        if (novoUsuario != null) usuarios.add(novoUsuario);
-                    } else if (tipo.equalsIgnoreCase("Frequencia")) {
-                        Frequencia novaFrequencia = processarLinhaFrequencia(campos);
-                        if (novaFrequencia != null) frequencias.add(novaFrequencia);
+                if (linha.trim().isEmpty() || !linha.toUpperCase().startsWith("FREQUENCIA")) continue;
+                String[] campos = linha.split(";", -1);
+                
+                if (campos.length > 6) {
+                    try {
+                        Frequencia novaFrequencia = processarLinhaFrequencia(proximoId++, campos);
+                        if (frequencias.stream().noneMatch(f -> f.getId() == novaFrequencia.getId())) {
+                            frequencias.add(novaFrequencia);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("AVISO: Linha de frequência ignorada: " + linha);
                     }
-                } catch (Exception e) {
-                    System.err.println("AVISO: Linha do CSV ignorada por erro de formato: " + linha);
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Erro geral ao carregar dados do CSV: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Erro ao ler arquivo CSV: " + e.getMessage());
         }
     }
 
-    private Usuario processarLinhaUsuario(String[] campos) {
-        int id = Integer.parseInt(campos[1]);
-        String nome = campos[2];
-        String email = campos[3];
-        String cpf = campos[4];
-        
-        if (campos[0].equalsIgnoreCase("Aluno")) {
-            String matricula = campos[5];
-            String curso = campos[6];
-            int semestre = Integer.parseInt(campos[7]);
-            return new Aluno(id, nome, email, cpf, matricula, curso, semestre);
-        } else if (campos[0].equalsIgnoreCase("Professor")) {
-            String area = campos[5];
-            String titulacao = campos[6];
-            return new Professor(id, nome, email, cpf, area, titulacao);
+    public void salvarFrequenciasCSV(String caminhoArquivo, List<Frequencia> frequencias) throws IOException {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(caminhoArquivo))) {
+            pw.println("TIPO;ID;MATRICULA_ALUNO;CPF_PROFESSOR;DISCIPLINA;DATA(dd/MM/yyyy);PRESENTE;OBSERVACOES");
+            for (Frequencia f : frequencias) {
+                pw.printf("Frequencia;%d;%s;%s;%s;%s;%b;%s%n",
+                        f.getId(), f.getAlunoMatricula(), f.getRegistradoPorCpf(),
+                        f.getDisciplina(), f.getData().format(FORMATADOR_DATA),
+                        f.isPresente(), f.getObservacoes());
+            }
         }
-        return null;
     }
 
-    private Frequencia processarLinhaFrequencia(String[] campos) {
-        int id = Integer.parseInt(campos[1]);
+    private Frequencia processarLinhaFrequencia(int id, String[] campos) {
         String matriculaAluno = campos[2];
         String cpfProfessor = campos[3];
         String disciplina = campos[4];

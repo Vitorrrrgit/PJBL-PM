@@ -10,7 +10,6 @@ import models.Frequencia;
 import models.Sistema;
 import models.Usuario;
 
-
 public class RegistroFrequenciaDialog extends JDialog {
 
     private final Sistema sistema;
@@ -111,7 +110,7 @@ public class RegistroFrequenciaDialog extends JDialog {
             LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             boolean presente = cbPresenca.getSelectedIndex() == 0;
             String observacoes = txtObservacoes.getText().trim();
-            
+
             // CORREÇÃO: Usar o método correto de geração de ID
             int novoId = sistema.obterProximoIdFrequencia();
 
@@ -119,13 +118,13 @@ public class RegistroFrequenciaDialog extends JDialog {
                     observacoes);
             sistema.adicionarFrequencia(freq);
 
-            JOptionPane.showMessageDialog(this, 
-                "Frequência registrada com sucesso!\n" +
-                "ID da Frequência: " + novoId + "\n" +
-                "Aluno: " + matricula + "\n" +
-                "Status: " + (presente ? "Presente" : "Falta"), 
-                "Sucesso",
-                JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Frequência registrada com sucesso!\n" +
+                            "ID da Frequência: " + novoId + "\n" +
+                            "Aluno: " + matricula + "\n" +
+                            "Status: " + (presente ? "Presente" : "Falta"),
+                    "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
             dispose(); // Fecha o diálogo
 
         } catch (DateTimeParseException ex) {

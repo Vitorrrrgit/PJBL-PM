@@ -1,540 +1,401 @@
 package visual;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Window;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import models.*;
+import models.Administrador;
+import models.Aluno;
+import models.Coordenador;
+import models.Curso;
+import models.Disciplina;
+import models.Professor;
+import models.Sistema;
+import models.Turma;
+import models.Usuario;
 import persistencia.SistemaException;
 
 public class PainelAdmin extends JPanel {
 
     private final Sistema sistema;
     private final Administrador admin;
-
-    private final JTable tabelaUsuarios;
     private final DefaultTableModel tableModelUsuarios;
-    private final JTable tabelaDisciplinas;
     private final DefaultTableModel tableModelDisciplinas;
-    private final JTable tabelaTurmas;
     private final DefaultTableModel tableModelTurmas;
+    private final DefaultTableModel tableModelCursos;
 
     public PainelAdmin(Sistema sistema, Administrador admin) {
         this.sistema = sistema;
         this.admin = admin;
         setLayout(new BorderLayout());
 
-        // Modelos e Tabelas de Usuários
-        String[] colunasUsuarios = { "ID", "Nome", "Email", "CPF", "Tipo" };
-        this.tableModelUsuarios = new DefaultTableModel(colunasUsuarios, 0);
-        this.tabelaUsuarios = new JTable(tableModelUsuarios);
+        this.tableModelUsuarios = new DefaultTableModel(new String[]{"ID", "Nome", "Email", "CPF", "Tipo", "Curso/Área"}, 0) { @Override public boolean isCellEditable(int r, int c){ return false; } };
+        this.tableModelDisciplinas = new DefaultTableModel(new String[]{"Código", "Nome", "Professor", "Curso"}, 0) { @Override public boolean isCellEditable(int r, int c){ return false; } };
+        this.tableModelTurmas = new DefaultTableModel(new String[]{"Disciplina", "Professor", "Alunos"}, 0) { @Override public boolean isCellEditable(int r, int c){ return false; } };
+        this.tableModelCursos = new DefaultTableModel(new String[]{"ID", "Nome do Curso"}, 0) { @Override public boolean isCellEditable(int r, int c){ return false; } };
 
-        // Modelos e Tabelas de Disciplinas
-        String[] colunasDisciplinas = { "Código", "Nome da Disciplina", "Professor CPF" };
-        this.tableModelDisciplinas = new DefaultTableModel(colunasDisciplinas, 0);
-        this.tabelaDisciplinas = new JTable(tableModelDisciplinas);
-
-        // Modelos e Tabelas de Turmas
-        String[] colunasTurmas = { "Disciplina", "Ano", "Semestre", "Professor", "Qtd Alunos" };
-        this.tableModelTurmas = new DefaultTableModel(colunasTurmas, 0);
-        this.tabelaTurmas = new JTable(tableModelTurmas);
-
-        // Abas
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Gerenciar Usuários", criarAbaGerenciarUsuarios());
+        tabbedPane.addTab("Gerenciar Cursos", criarAbaGerenciarCursos());
         tabbedPane.addTab("Gerenciar Disciplinas", criarAbaGerenciarDisciplinas());
         tabbedPane.addTab("Gerenciar Turmas", criarAbaGerenciarTurmas());
-        tabbedPane.addTab("Relatórios Detalhados", criarAbaRelatorios());
+        tabbedPane.addTab("Relatórios", criarAbaRelatorios());
+        tabbedPane.addTab("Importar/Exportar", criarAbaImportarExportar());
         tabbedPane.addTab("Meu Perfil", criarAbaPerfil());
 
         add(tabbedPane, BorderLayout.CENTER);
         add(criarPainelSair(), BorderLayout.SOUTH);
-
         atualizarTodasTabelas();
     }
 
-    // Aba de Gerenciar Usuários    
+    private void atualizarTodasTabelas() {
+        tableModelUsuarios.setRowCount(0);
+        sistema.listarUsuarios().forEach(u -> {
+            String cursoOuArea = "N/A";
+            if (u instanceof Aluno a) cursoOuArea = a.getCurso().getNome();
+            else if (u instanceof Professor p) cursoOuArea = p.getArea();
+            else if (u instanceof Coordenador c) cursoOuArea = c.getCurso().getNome();
+            tableModelUsuarios.addRow(new Object[]{u.getId(), u.getNome(), u.getEmail(), u.getCpf(), u.getTipoUsuario(), cursoOuArea});
+        });
+
+        tableModelDisciplinas.setRowCount(0);
+        sistema.listarDisciplinas().forEach(d -> tableModelDisciplinas.addRow(new Object[]{d.getCodigoDisciplina(), d.getNomeDisciplina(), d.getProfessorResponsavel(), d.getCurso().getNome()}));
+        
+        tableModelTurmas.setRowCount(0);
+        sistema.listarTurmas().forEach(t -> tableModelTurmas.addRow(new Object[]{t.getNomeDisciplina(), t.getProfessorResponsavel().getNome(), t.getAlunosMatriculados().size()}));
+        
+        tableModelCursos.setRowCount(0);
+        sistema.listarCursos().forEach(c -> tableModelCursos.addRow(new Object[]{c.getId(), c.getNome()}));
+    }
+
+    // --- ABAS DE GERENCIAMENTO ---
+
     private JPanel criarAbaGerenciarUsuarios() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel(new BorderLayout(5, 5));
+        JTable tabela = new JTable(tableModelUsuarios);
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAdicionar = new JButton("Adicionar Usuário");
-        JButton btnRemover = new JButton("Remover Usuário");
-
-        btnAdicionar.addActionListener(_ -> mostrarDialogoAdicionarUsuario());
-        btnRemover.addActionListener(_ -> removerUsuarioSelecionado());
-
+        JButton btnAdicionar = new JButton("Adicionar");
+        JButton btnRemover = new JButton("Remover");
+        btnAdicionar.addActionListener(_ -> adicionarUsuario());
+        btnRemover.addActionListener(_ -> removerUsuario(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
-        painel.add(new JScrollPane(tabelaUsuarios), BorderLayout.CENTER);
+        painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
         painel.add(painelBotoes, BorderLayout.SOUTH);
         return painel;
     }
 
-    // Aba de Gerenciar Disciplinas
+    private JPanel criarAbaGerenciarCursos() {
+        JPanel painel = new JPanel(new BorderLayout(5, 5));
+        JTable tabela = new JTable(tableModelCursos);
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnAdicionar = new JButton("Adicionar");
+        JButton btnRemover = new JButton("Remover");
+        btnAdicionar.addActionListener(_ -> adicionarCurso());
+        btnRemover.addActionListener(_ -> removerCurso(tabela));
+        painelBotoes.add(btnAdicionar);
+        painelBotoes.add(btnRemover);
+        painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
+        painel.add(painelBotoes, BorderLayout.SOUTH);
+        return painel;
+    }
+
     private JPanel criarAbaGerenciarDisciplinas() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel(new BorderLayout(5, 5));
+        JTable tabela = new JTable(tableModelDisciplinas);
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAdicionar = new JButton("Adicionar Disciplina");
-        JButton btnRemover = new JButton("Remover Disciplina");
-
-        btnAdicionar.addActionListener(_ -> adicionarNovaDisciplina());
-        btnRemover.addActionListener(_ -> removerDisciplinaSelecionada());
-
+        JButton btnAdicionar = new JButton("Adicionar");
+        JButton btnRemover = new JButton("Remover");
+        btnAdicionar.addActionListener(_ -> adicionarDisciplina());
+        btnRemover.addActionListener(_ -> removerDisciplina(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
-        painel.add(new JScrollPane(tabelaDisciplinas), BorderLayout.CENTER);
+        painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
         painel.add(painelBotoes, BorderLayout.SOUTH);
         return painel;
     }
 
-    // Aba de Gerenciar Turmas
     private JPanel criarAbaGerenciarTurmas() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel(new BorderLayout(5, 5));
+        JTable tabela = new JTable(tableModelTurmas);
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
-        JButton btnAdicionarTurma = new JButton("Criar Nova Turma");
-        JButton btnAssociarAluno = new JButton("Associar Aluno à Turma");
-        JButton btnRemoverTurma = new JButton("Remover Turma");
-        JButton btnVerDetalhes = new JButton("Ver Detalhes da Turma");
-
-        btnAdicionarTurma.addActionListener(_ -> criarNovaTurma());
-        btnAssociarAluno.addActionListener(_ -> associarAlunoTurma());
-        btnRemoverTurma.addActionListener(_ -> removerTurmaSelecionada());
-        btnVerDetalhes.addActionListener(_ -> verDetalhesTurma());
-
-        painelBotoes.add(btnAdicionarTurma);
-        painelBotoes.add(btnAssociarAluno);
-        painelBotoes.add(btnRemoverTurma);
-        painelBotoes.add(btnVerDetalhes);
-        
-        painel.add(new JScrollPane(tabelaTurmas), BorderLayout.CENTER);
+        JButton btnAdicionar = new JButton("Adicionar Turma");
+        JButton btnRemover = new JButton("Remover Turma");
+        JButton btnAdicionarAluno = new JButton("Adicionar Aluno à Turma");
+        btnAdicionar.addActionListener(_ -> adicionarTurma());
+        btnRemover.addActionListener(_ -> removerTurma(tabela));
+        btnAdicionarAluno.addActionListener(_ -> adicionarAlunoATurma(tabela));
+        painelBotoes.add(btnAdicionar);
+        painelBotoes.add(btnRemover);
+        painelBotoes.add(btnAdicionarAluno);
+        painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
         painel.add(painelBotoes, BorderLayout.SOUTH);
         return painel;
     }
 
-    // Aba de Relatórios
     private JPanel criarAbaRelatorios() {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
-        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        JTextArea area = new JTextArea("Selecione um relatório para visualizar.");
+        area.setEditable(false);
+        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
         JPanel painelFiltro = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JComboBox<String> comboRelatorios = new JComboBox<>(new String[] {
-            "Selecione um relatório...", "Relatório de Alunos", "Relatório de Professores", "Relatório de Turmas"
-        });
         painelFiltro.add(new JLabel("Tipo de Relatório:"));
-        painelFiltro.add(comboRelatorios);
-        
-        JTextArea areaResultado = new JTextArea("Selecione um tipo de relatório para visualizar os dados.");
-        areaResultado.setEditable(false);
-        areaResultado.setFont(new Font("Consolas", Font.PLAIN, 14));
-
-        comboRelatorios.addActionListener(_ -> {
-            String selecionado = (String) comboRelatorios.getSelectedItem();
-            if (selecionado == null) return;
-            switch (selecionado) {
-                case "Relatório de Alunos" -> areaResultado.setText(sistema.gerarRelatorioDeAlunos());
-                case "Relatório de Professores" -> areaResultado.setText(sistema.gerarRelatorioDeProfessores());
-                case "Relatório de Turmas" -> areaResultado.setText(sistema.gerarRelatorioDeTurmas());
-                default -> areaResultado.setText("Selecione um tipo de relatório para visualizar os dados.");
+        JComboBox<String> combo = new JComboBox<>(new String[]{"Selecione...", "Alunos", "Professores", "Turmas"});
+        painelFiltro.add(combo);
+        combo.addActionListener(e -> {
+            String sel = (String) combo.getSelectedItem();
+            if (sel != null) switch (sel) {
+                case "Alunos" -> area.setText(sistema.gerarRelatorioDeAlunos());
+                case "Professores" -> area.setText(sistema.gerarRelatorioDeProfessores());
+                case "Turmas" -> area.setText(sistema.gerarRelatorioDeTurmas());
             }
         });
-
+        JButton btnExportar = new JButton("Exportar Relatório (TXT)");
+        btnExportar.addActionListener(_ -> exportarRelatorio(area.getText()));
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelBotoes.add(btnExportar);
         painel.add(painelFiltro, BorderLayout.NORTH);
-        painel.add(new JScrollPane(areaResultado), BorderLayout.CENTER);
+        painel.add(new JScrollPane(area), BorderLayout.CENTER);
+        painel.add(painelBotoes, BorderLayout.SOUTH);
         return painel;
     }
 
-    // Aba de Perfil
+    private JPanel criarAbaImportarExportar() {
+        JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JButton btnImportar = new JButton("Importar Frequências (CSV)");
+        JButton btnExportar = new JButton("Exportar Frequências (CSV)");
+        btnImportar.addActionListener(_ -> importarFrequencias());
+        btnExportar.addActionListener(_ -> exportarFrequencias());
+        painel.add(btnImportar);
+        painel.add(btnExportar);
+        return painel;
+    }
+
     private JPanel criarAbaPerfil() {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAlterarSenha = new JButton("Alterar Senha");
-        btnAlterarSenha.addActionListener(_ -> alterarSenha());
-        painel.add(new JLabel("Usuário: " + admin.getNome()));
+        btnAlterarSenha.addActionListener(_ -> new AlterarSenhaDialog((Frame) SwingUtilities.getWindowAncestor(this), sistema, admin).setVisible(true));
+        painel.add(new JLabel("Logado como: " + admin.getNome()));
         painel.add(btnAlterarSenha);
         return painel;
     }
 
-    private JPanel criarPainelSair() {
-        JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        painelSair.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        JButton btnLogout = new JButton("Logout");
-        btnLogout.addActionListener(_ -> {
-            int confirmacao = JOptionPane.showConfirmDialog(
-                    this,
-                    "Deseja realmente fazer logout e voltar para a tela de login?",
-                    "Confirmar Saída",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (confirmacao == JOptionPane.YES_OPTION) {
-                Window janelaPrincipal = SwingUtilities.getWindowAncestor(this);
-                if (janelaPrincipal != null) {
-                    janelaPrincipal.dispose();
-                }
-                new LoginWindow().setVisible(true);
-            }
-        });
-
-        painelSair.add(btnLogout);
-        return painelSair;
-    }
-
-    // --- MÉTODOS DE ATUALIZAÇÃO DAS TABELAS ---
-
-    private void atualizarTodasTabelas() {
-        atualizarTabelaUsuarios();
-        atualizarTabelaDisciplinas();
-        atualizarTabelaTurmas();
-    }
-
-    private void atualizarTabelaUsuarios() {
-        tableModelUsuarios.setRowCount(0);
-        sistema.listarUsuarios().forEach(u -> tableModelUsuarios
-                .addRow(new Object[] { u.getId(), u.getNome(), u.getEmail(), u.getCpf(), u.getTipoUsuario() }));
-    }
-
-    private void atualizarTabelaDisciplinas() {
-        tableModelDisciplinas.setRowCount(0);
-        sistema.listarDisciplinas().forEach(d -> tableModelDisciplinas
-                .addRow(new Object[] { d.getCodigoDisciplina(), d.getNomeDisciplina(), d.getProfessorResponsavel() }));
-    }
-
-    private void atualizarTabelaTurmas() {
-        tableModelTurmas.setRowCount(0);
-        sistema.listarTurmas().forEach(t -> {
-            String nomeProfessor = t.getProfessorResponsavel().getNome();
-            int qtdAlunos = t.getAlunosMatriculados().size();
-            tableModelTurmas.addRow(new Object[] { 
-                t.getNomeDisciplina(), 
-                "2025", // Ano fixo, pode ser melhorado
-                "1",    // Semestre fixo, pode ser melhorado
-                nomeProfessor, 
-                qtdAlunos 
-            });
-        });
-    }
-
-    // --- MÉTODOS DE REMOÇÃO ---
-
-    private void removerUsuarioSelecionado() {
-        int linha = tabelaUsuarios.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um usuário para remover.");
-            return;
-        }
-
-        int id = (int) tableModelUsuarios.getValueAt(linha, 0);
-        Usuario u = sistema.listarUsuarios().stream().filter(user -> user.getId() == id).findFirst().orElse(null);
-
-        if (u != null) {
-            int confirm = JOptionPane.showConfirmDialog(this, "Remover " + u.getNome() + "?", "Confirmar",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    sistema.removerUsuario(u);
-                    atualizarTabelaUsuarios();
-                } catch (SistemaException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-
-    private void removerDisciplinaSelecionada() {
-        int linha = tabelaDisciplinas.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione uma disciplina para remover.");
-            return;
-        }
-
-        String codigo = (String) tableModelDisciplinas.getValueAt(linha, 0);
-        Disciplina d = sistema.listarDisciplinas().stream().filter(disc -> disc.getCodigoDisciplina().equals(codigo))
-                .findFirst().orElse(null);
-
-        if (d != null) {
-            int confirm = JOptionPane.showConfirmDialog(this, "Remover a disciplina " + d.getNomeDisciplina() + "?",
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    sistema.removerDisciplina(d);
-                    atualizarTabelaDisciplinas();
-                } catch (SistemaException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-
-    private void removerTurmaSelecionada() {
-        int linha = tabelaTurmas.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione uma turma para remover.");
-            return;
-        }
-
-        String disciplina = (String) tableModelTurmas.getValueAt(linha, 0);
-        String professor = (String) tableModelTurmas.getValueAt(linha, 3);
-        
-        int confirm = JOptionPane.showConfirmDialog(this, 
-            "Remover a turma de " + disciplina + " do professor " + professor + "?", 
-            "Confirmar", JOptionPane.YES_NO_OPTION);
-            
-        if (confirm == JOptionPane.YES_OPTION) {
-            // Encontrar e remover a turma do sistema
-            sistema.listarTurmas().removeIf(t -> 
-                t.getNomeDisciplina().equals(disciplina) && 
-                t.getProfessorResponsavel().getNome().equals(professor)
-            );
-            atualizarTabelaTurmas();
-            JOptionPane.showMessageDialog(this, "Turma removida com sucesso!");
-        }
-    }
-
-    // --- MÉTODOS DE ADIÇÃO ---
-
-    private void adicionarNovaDisciplina() {
-        JTextField txtCodigo = new JTextField();
-        JTextField txtNome = new JTextField();
-        JTextField txtCpfProfessor = new JTextField();
-
-        JPanel painelFormulario = new JPanel(new GridLayout(0, 2, 5, 5));
-        painelFormulario.add(new JLabel("Código da Disciplina:"));
-        painelFormulario.add(txtCodigo);
-        painelFormulario.add(new JLabel("Nome da Disciplina:"));
-        painelFormulario.add(txtNome);
-        painelFormulario.add(new JLabel("CPF do Professor Responsável:"));
-        painelFormulario.add(txtCpfProfessor);
-
-        int resultado = JOptionPane.showConfirmDialog(this, painelFormulario,
-                "Adicionar Nova Disciplina", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (resultado == JOptionPane.OK_OPTION) {
-            String codigo = txtCodigo.getText().trim();
-            String nome = txtNome.getText().trim();
-            String cpf = txtCpfProfessor.getText().trim();
-
-            if (codigo.isEmpty() || nome.isEmpty() || cpf.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            boolean professorExiste = sistema.listarUsuarios().stream()
-                    .anyMatch(u -> u instanceof Professor && u.getCpf().equals(cpf));
-            if (!professorExiste) {
-                JOptionPane.showMessageDialog(this, "Nenhum professor encontrado com o CPF informado.", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
+    // --- LÓGICA DE MANIPULAÇÃO ---
+    
+    private void adicionarCurso() {
+        String nomeCurso = JOptionPane.showInputDialog(this, "Digite o nome do novo curso:", "Adicionar Curso", JOptionPane.PLAIN_MESSAGE);
+        if (nomeCurso != null && !nomeCurso.trim().isEmpty()) {
             try {
-                Disciplina novaDisciplina = new Disciplina(nome, codigo, cpf);
-                sistema.adicionarDisciplina(novaDisciplina);
-                atualizarTabelaDisciplinas();
-                JOptionPane.showMessageDialog(this, "Disciplina adicionada com sucesso!");
-            } catch (SistemaException e) {
-                JOptionPane.showMessageDialog(this, "Erro ao adicionar disciplina: " + e.getMessage(), "Erro",
-                        JOptionPane.ERROR_MESSAGE);
+                sistema.adicionarCurso(nomeCurso);
+                atualizarTodasTabelas();
+            } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); }
+        }
+    }
+
+    private void removerCurso(JTable tabela) {
+        int linha = tabela.getSelectedRow();
+        if (linha != -1 && JOptionPane.showConfirmDialog(this, "Remover curso?", "Confirmação", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            int id = (int) tabela.getValueAt(linha, 0);
+            Curso curso = sistema.listarCursos().stream().filter(c -> c.getId() == id).findFirst().orElse(null);
+            if (curso != null) {
+                try { sistema.removerCurso(curso); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
             }
         }
     }
 
-    private void criarNovaTurma() {
-        // Buscar disciplinas e professores disponíveis
-        java.util.List<Disciplina> disciplinas = sistema.listarDisciplinas();
-        java.util.List<Professor> professores = sistema.listarUsuarios().stream()
-            .filter(u -> u instanceof Professor)
-            .map(u -> (Professor) u)
-            .collect(java.util.stream.Collectors.toList());
+    private void adicionarUsuario() {
+        JTextField nomeField = new JTextField();
+        JTextField emailField = new JTextField();
+        JComboBox<String> tipoCombo = new JComboBox<>(new String[]{"Aluno", "Professor", "Coordenador", "Administrador"});
+        JLabel cursoLabel = new JLabel("Curso/Área:");
+        JComboBox<Curso> cursoCombo = new JComboBox<>(sistema.listarCursos().toArray(new Curso[0]));
+        JPanel painelDialogo = new JPanel(new GridLayout(0, 2, 5, 5));
+        painelDialogo.add(new JLabel("Nome:")); painelDialogo.add(nomeField);
+        painelDialogo.add(new JLabel("Email:")); painelDialogo.add(emailField);
+        painelDialogo.add(new JLabel("Tipo:")); painelDialogo.add(tipoCombo);
+        painelDialogo.add(cursoLabel);
+        painelDialogo.add(cursoCombo);
 
-        if (disciplinas.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há disciplinas cadastradas. Cadastre uma disciplina primeiro.");
-            return;
-        }
-
-        if (professores.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há professores cadastrados. Cadastre um professor primeiro.");
-            return;
-        }
-
-        JComboBox<String> comboDisciplinas = new JComboBox<>();
-        disciplinas.forEach(d -> comboDisciplinas.addItem(d.getNomeDisciplina()));
-
-        JComboBox<String> comboProfessores = new JComboBox<>();
-        professores.forEach(p -> comboProfessores.addItem(p.getNome() + " (CPF: " + p.getCpf() + ")"));
-
-        JPanel painelFormulario = new JPanel(new GridLayout(0, 2, 5, 5));
-        painelFormulario.add(new JLabel("Disciplina:"));
-        painelFormulario.add(comboDisciplinas);
-        painelFormulario.add(new JLabel("Professor Responsável:"));
-        painelFormulario.add(comboProfessores);
-
-        int resultado = JOptionPane.showConfirmDialog(this, painelFormulario,
-                "Criar Nova Turma", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (resultado == JOptionPane.OK_OPTION) {
-            String disciplinaSelecionada = (String) comboDisciplinas.getSelectedItem();
-            int indexProfessor = comboProfessores.getSelectedIndex();
-            Professor professorSelecionado = professores.get(indexProfessor);
-
-            // Verificar se já existe uma turma para essa disciplina com esse professor
-            boolean turmaExiste = sistema.listarTurmas().stream()
-                .anyMatch(t -> t.getNomeDisciplina().equals(disciplinaSelecionada) && 
-                              t.getProfessorResponsavel().equals(professorSelecionado));
-
-            if (turmaExiste) {
-                JOptionPane.showMessageDialog(this, "Já existe uma turma dessa disciplina para esse professor.");
-                return;
-            }
-
-            Turma novaTurma = new Turma(disciplinaSelecionada, 2025, 1, professorSelecionado);
-            sistema.adicionarTurma(novaTurma);
-            atualizarTabelaTurmas();
-            JOptionPane.showMessageDialog(this, "Turma criada com sucesso!");
-        }
-    }
-
-    private void associarAlunoTurma() {
-        if (sistema.listarTurmas().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há turmas criadas. Crie uma turma primeiro.");
-            return;
-        }
-
-        java.util.List<Turma> turmas = sistema.listarTurmas();
-        java.util.List<Aluno> alunos = sistema.listarUsuarios().stream()
-            .filter(u -> u instanceof Aluno)
-            .map(u -> (Aluno) u)
-            .collect(java.util.stream.Collectors.toList());
-
-        if (alunos.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há alunos cadastrados.");
-            return;
-        }
-
-        JComboBox<String> comboTurmas = new JComboBox<>();
-        turmas.forEach(t -> comboTurmas.addItem(t.getNomeDisciplina() + " - " + t.getProfessorResponsavel().getNome()));
-
-        JComboBox<String> comboAlunos = new JComboBox<>();
-        alunos.forEach(a -> comboAlunos.addItem(a.getNome() + " (Mat: " + a.getMatricula() + ")"));
-
-        JPanel painelFormulario = new JPanel(new GridLayout(0, 2, 5, 5));
-        painelFormulario.add(new JLabel("Turma:"));
-        painelFormulario.add(comboTurmas);
-        painelFormulario.add(new JLabel("Aluno:"));
-        painelFormulario.add(comboAlunos);
-
-        int resultado = JOptionPane.showConfirmDialog(this, painelFormulario,
-                "Associar Aluno à Turma", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (resultado == JOptionPane.OK_OPTION) {
-            int indexTurma = comboTurmas.getSelectedIndex();
-            int indexAluno = comboAlunos.getSelectedIndex();
-            
-            Turma turmaSelecionada = turmas.get(indexTurma);
-            Aluno alunoSelecionado = alunos.get(indexAluno);
-
-            turmaSelecionada.adicionarAluno(alunoSelecionado);
-            atualizarTabelaTurmas();
-            JOptionPane.showMessageDialog(this, "Aluno associado à turma com sucesso!");
-        }
-    }
-
-    private void verDetalhesTurma() {
-        int linha = tabelaTurmas.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione uma turma para ver os detalhes.");
-            return;
-        }
-
-        String disciplina = (String) tableModelTurmas.getValueAt(linha, 0);
-        String professor = (String) tableModelTurmas.getValueAt(linha, 3);
+        tipoCombo.addActionListener(e -> {
+            boolean isAdm = "Administrador".equals(tipoCombo.getSelectedItem());
+            cursoLabel.setVisible(!isAdm);
+            cursoCombo.setVisible(!isAdm);
+        });
         
-        Turma turma = sistema.listarTurmas().stream()
-            .filter(t -> t.getNomeDisciplina().equals(disciplina) && 
-                        t.getProfessorResponsavel().getNome().equals(professor))
-            .findFirst()
-            .orElse(null);
-
-        if (turma != null) {
-            StringBuilder detalhes = new StringBuilder();
-            detalhes.append("DETALHES DA TURMA\n\n");
-            detalhes.append("Disciplina: ").append(turma.getNomeDisciplina()).append("\n");
-            detalhes.append("Professor: ").append(turma.getProfessorResponsavel().getNome()).append("\n");
-            detalhes.append("CPF do Professor: ").append(turma.getProfessorResponsavel().getCpf()).append("\n");
-            detalhes.append("Quantidade de Alunos: ").append(turma.getAlunosMatriculados().size()).append("\n\n");
-            detalhes.append("ALUNOS MATRICULADOS:\n");
-            
-            if (turma.getAlunosMatriculados().isEmpty()) {
-                detalhes.append("Nenhum aluno matriculado ainda.\n");
-            } else {
-                turma.getAlunosMatriculados().forEach(aluno -> 
-                    detalhes.append("- ").append(aluno.getNome())
-                           .append(" (Mat: ").append(aluno.getMatricula()).append(")\n")
-                );
-            }
-
-            JTextArea areaDetalhes = new JTextArea(detalhes.toString());
-            areaDetalhes.setEditable(false);
-            areaDetalhes.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            
-            JScrollPane scroll = new JScrollPane(areaDetalhes);
-            scroll.setPreferredSize(new Dimension(400, 300));
-            
-            JOptionPane.showMessageDialog(this, scroll, "Detalhes da Turma", JOptionPane.INFORMATION_MESSAGE);
+        if (JOptionPane.showConfirmDialog(this, painelDialogo, "Adicionar Usuário", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            try {
+                String tipo = (String) tipoCombo.getSelectedItem();
+                Curso curso = (Curso) cursoCombo.getSelectedItem();
+                if (!"Administrador".equals(tipo) && curso == null) {
+                    JOptionPane.showMessageDialog(this, "Selecione um curso.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                Usuario novoUsuario = switch (tipo) {
+                    case "Aluno" -> new Aluno(sistema.obterProximoIdUsuario(), nomeField.getText(), emailField.getText(), sistema.gerarCPF(), "MAT" + sistema.obterProximoIdUsuario(), curso, 1);
+                    case "Professor" -> new Professor(sistema.obterProximoIdUsuario(), nomeField.getText(), emailField.getText(), sistema.gerarCPF(), curso.getNome(), "Indefinida");
+                    case "Coordenador" -> new Coordenador(sistema.obterProximoIdUsuario(), nomeField.getText(), emailField.getText(), sistema.gerarCPF(), curso);
+                    default -> new Administrador(sistema.obterProximoIdUsuario(), nomeField.getText(), emailField.getText(), sistema.gerarCPF(), "TOTAL");
+                };
+                sistema.adicionarUsuario(novoUsuario);
+                atualizarTodasTabelas();
+                JOptionPane.showMessageDialog(this, "Usuário adicionado! Senha gerada: " + novoUsuario.getSenha(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
         }
     }
     
-    private void alterarSenha() {
-        new AlterarSenhaDialog((Frame) SwingUtilities.getWindowAncestor(this), sistema, admin).setVisible(true);
+    private void removerUsuario(JTable tabela) {
+        int linha = tabela.getSelectedRow();
+        if (linha != -1 && JOptionPane.showConfirmDialog(this, "Remover usuário?", "Confirmação", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            int id = (int) tabela.getValueAt(linha, 0);
+            sistema.listarUsuarios().stream().filter(u -> u.getId() == id).findFirst().ifPresent(usuario -> {
+                try { sistema.removerUsuario(usuario); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
+            });
+        }
     }
 
-    private void mostrarDialogoAdicionarUsuario() {
-        JTextField txtNome = new JTextField();
-        JTextField txtEmail = new JTextField();
-        JTextField txtCpf = new JTextField();
-        JComboBox<String> comboTipo = new JComboBox<>(
-                new String[] { "Aluno", "Professor", "Coordenador", "Administrador" });
-
-        JPanel painelFormulario = new JPanel();
-        painelFormulario.setLayout(new BoxLayout(painelFormulario, BoxLayout.Y_AXIS));
-        painelFormulario.add(new JLabel("Tipo de Usuário:"));
-        painelFormulario.add(comboTipo);
-        painelFormulario.add(new JLabel("Nome:"));
-        painelFormulario.add(txtNome);
-        painelFormulario.add(new JLabel("Email:"));
-        painelFormulario.add(txtEmail);
-        painelFormulario.add(new JLabel("CPF:"));
-        painelFormulario.add(txtCpf);
-
-        int resultado = JOptionPane.showConfirmDialog(this, painelFormulario, "Adicionar Novo Usuário",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (resultado == JOptionPane.OK_OPTION) {
-            try {
-                // CORREÇÃO: Usar o método correto de geração de ID
-                int novoId = sistema.obterProximoIdUsuario();
-                String tipo = (String) comboTipo.getSelectedItem();
-                Usuario novoUsuario;
-
-                novoUsuario = switch (tipo) {
-                    case "Aluno" -> new Aluno(novoId, txtNome.getText(), txtEmail.getText(), txtCpf.getText(),
-                            "MAT-" + novoId, "Indefinido", 1);
-                    case "Professor" -> new Professor(novoId, txtNome.getText(), txtEmail.getText(), txtCpf.getText(),
-                            "Indefinida", "Indefinida");
-                    case "Coordenador" ->
-                        new Coordenador(novoId, txtNome.getText(), txtEmail.getText(), txtCpf.getText(), "Indefinido");
-                    case "Administrador" ->
-                        new Administrador(novoId, txtNome.getText(), txtEmail.getText(), txtCpf.getText(), "PADRAO");
-                    default -> throw new SistemaException("Tipo", tipo, "Tipo de usuário inválido.");
-                };
-
-                sistema.adicionarUsuario(novoUsuario);
-                atualizarTabelaUsuarios();
-                JOptionPane.showMessageDialog(this, tipo + " adicionado com sucesso!");
-
-            } catch (SistemaException | NullPointerException ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao criar usuário: " + ex.getMessage(), "Erro de Validação",
-                        JOptionPane.ERROR_MESSAGE);
+    private void adicionarDisciplina() {
+        JTextField codigoField = new JTextField();
+        JTextField nomeField = new JTextField();
+        JComboBox<Professor> comboProfessores = new JComboBox<>(sistema.listarUsuarios().stream().filter(u -> u instanceof Professor).map(u -> (Professor) u).toArray(Professor[]::new));
+        JComboBox<Curso> comboCursos = new JComboBox<>(sistema.listarCursos().toArray(new Curso[0]));
+        JPanel painelDialogo = new JPanel(new GridLayout(0, 2, 5, 5));
+        painelDialogo.add(new JLabel("Código:")); painelDialogo.add(codigoField);
+        painelDialogo.add(new JLabel("Nome:")); painelDialogo.add(nomeField);
+        painelDialogo.add(new JLabel("Professor:")); painelDialogo.add(comboProfessores);
+        painelDialogo.add(new JLabel("Curso:")); painelDialogo.add(comboCursos);
+        if (JOptionPane.showConfirmDialog(this, painelDialogo, "Adicionar Disciplina", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            Professor prof = (Professor) comboProfessores.getSelectedItem();
+            Curso curso = (Curso) comboCursos.getSelectedItem();
+            if (prof != null && curso != null) {
+                try { sistema.adicionarDisciplina(new Disciplina(nomeField.getText(), codigoField.getText(), prof.getCpf(), curso)); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
             }
         }
+    }
+    
+    private void removerDisciplina(JTable tabela) {
+        int linha = tabela.getSelectedRow();
+        if (linha != -1 && JOptionPane.showConfirmDialog(this, "Remover disciplina?", "Confirmação", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String codigo = (String) tabela.getValueAt(linha, 0);
+            sistema.listarDisciplinas().stream().filter(d -> d.getCodigoDisciplina().equals(codigo)).findFirst().ifPresent(disciplina -> {
+                try { sistema.removerDisciplina(disciplina); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
+            });
+        }
+    }
+    
+    private void adicionarTurma() {
+        JComboBox<Disciplina> comboDisciplinas = new JComboBox<>(sistema.listarDisciplinas().toArray(Disciplina[]::new));
+        JComboBox<Professor> comboProfessores = new JComboBox<>(sistema.listarUsuarios().stream().filter(u -> u instanceof Professor).map(u -> (Professor) u).toArray(Professor[]::new));
+        JPanel painelDialogo = new JPanel(new GridLayout(0, 2, 5, 5));
+        painelDialogo.add(new JLabel("Disciplina:")); painelDialogo.add(comboDisciplinas);
+        painelDialogo.add(new JLabel("Professor:")); painelDialogo.add(comboProfessores);
+        if (JOptionPane.showConfirmDialog(this, painelDialogo, "Adicionar Turma", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            Disciplina disc = (Disciplina) comboDisciplinas.getSelectedItem();
+            Professor prof = (Professor) comboProfessores.getSelectedItem();
+            if (disc != null && prof != null) {
+                try { sistema.adicionarTurma(new Turma(disc.getNomeDisciplina(), 2025, 1, prof, disc.getCurso())); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
+            }
+        }
+    }
+    
+    private void removerTurma(JTable tabela) {
+        int linha = tabela.getSelectedRow();
+        if (linha != -1 && JOptionPane.showConfirmDialog(this, "Remover turma?", "Confirmação", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String nomeDisciplina = (String) tabela.getValueAt(linha, 0);
+            Turma turma = sistema.listarTurmas().stream().filter(t -> t.getNomeDisciplina().equals(nomeDisciplina)).findFirst().orElse(null);
+            if (turma != null) {
+                try { sistema.removerTurma(turma); atualizarTodasTabelas(); } catch (SistemaException e) { JOptionPane.showMessageDialog(this, e.getMessage()); }
+            }
+        }
+    }
+
+    private void adicionarAlunoATurma(JTable tabelaTurmas) {
+        int linhaSelecionada = tabelaTurmas.getSelectedRow();
+        if (linhaSelecionada == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma turma.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String nomeDisciplina = (String) tableModelTurmas.getValueAt(linhaSelecionada, 0);
+        Turma turma = sistema.listarTurmas().stream().filter(t -> t.getNomeDisciplina().equals(nomeDisciplina)).findFirst().orElse(null);
+        if (turma == null) return;
+        List<Aluno> alunosDisponiveis = sistema.listarUsuarios().stream()
+            .filter(u -> u instanceof Aluno).map(u -> (Aluno) u)
+            .filter(a -> !turma.getAlunosMatriculados().contains(a))
+            .collect(Collectors.toList());
+        if (alunosDisponiveis.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Não há alunos disponíveis.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        JComboBox<Aluno> comboAlunos = new JComboBox<>(alunosDisponiveis.toArray(new Aluno[0]));
+        if (JOptionPane.showConfirmDialog(this, comboAlunos, "Selecione o Aluno", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            Aluno aluno = (Aluno) comboAlunos.getSelectedItem();
+            if (aluno != null) {
+                turma.adicionarAluno(aluno);
+                sistema.salvarDados();
+                atualizarTodasTabelas();
+            }
+        }
+    }
+    
+    private void exportarRelatorio(String conteudo) {
+        if (conteudo.startsWith("Selecione")) { JOptionPane.showMessageDialog(this, "Selecione um relatório para exportar.", "Aviso", JOptionPane.WARNING_MESSAGE); return; }
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("TXT Files", "txt"));
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try (PrintWriter out = new PrintWriter(new FileWriter(chooser.getSelectedFile()))) {
+                out.println(conteudo);
+                JOptionPane.showMessageDialog(this, "Relatório exportado!");
+            } catch (IOException e) { JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage()); }
+        }
+    }
+
+    private void importarFrequencias() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            sistema.importarFrequenciasCSV(chooser.getSelectedFile().getAbsolutePath());
+            atualizarTodasTabelas();
+        }
+    }
+
+    private void exportarFrequencias() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try { sistema.exportarFrequenciasCSV(chooser.getSelectedFile().getAbsolutePath()); } catch (IOException e) { JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage()); }
+        }
+    }
+    
+    private JPanel criarPainelSair() {
+        JPanel painelSair = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnLogout = new JButton("Logout");
+        btnLogout.addActionListener(_ -> {
+            Window janela = SwingUtilities.getWindowAncestor(this);
+            if (janela != null) janela.dispose();
+            new LoginWindow(sistema).setVisible(true);
+        });
+        painelSair.add(btnLogout);
+        return painelSair;
     }
 }

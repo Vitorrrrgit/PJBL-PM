@@ -1,8 +1,8 @@
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException; 
+import javax.swing.UnsupportedLookAndFeelException;
+import models.Sistema; // Importar Sistema
 import visual.LoginWindow;
-
 
 public class Main {
 
@@ -14,10 +14,12 @@ public class Main {
             System.err.println("Não foi possível aplicar o Look and Feel do sistema.");
         }
 
+        Sistema sistema = new Sistema();
+
         SwingUtilities.invokeLater(() -> {
             System.out.println("Iniciando Sistema de Frequencia...");
             
-            LoginWindow login = new LoginWindow();
+            LoginWindow login = new LoginWindow(sistema);
             login.setVisible(true);
         });
     }

@@ -13,15 +13,20 @@ public class LoginWindow extends JFrame {
     private JButton btnLogin;
     private JButton btnCancelar;
 
-    public LoginWindow() {
+    /**
+     * --- CORREÇÃO 1: Construtor modificado ---
+     * O construtor agora recebe a instância única do Sistema, em vez de criar uma nova.
+     * @param sistema A instância única do sistema para ser usada pela janela.
+     */
+    public LoginWindow(Sistema sistema) {
         super("Sistema de Frequência - Login");
-        this.sistema = new Sistema();
+        // Usa a instância do sistema que foi passada como parâmetro.
+        this.sistema = sistema;
 
         configurarJanela();
         criarComponentes();
         organizarLayout();
         adicionarListeners();
-        setVisible(true);
     }
 
     private void configurarJanela() {
@@ -46,7 +51,7 @@ public class LoginWindow extends JFrame {
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-        // --- LINHAS FALTANTES PARA CORRIGIR A COR ---
+        // --- LINHAS PARA GARANTIR A COR DE FUNDO DOS BOTÕES ---
         btnLogin.setOpaque(true);
         btnCancelar.setOpaque(true);
         btnCancelar.setBorderPainted(false);
@@ -64,13 +69,9 @@ public class LoginWindow extends JFrame {
 
         try {
             ImageIcon icone = new ImageIcon(getClass().getResource("/image/imagempraTentarSistema.png"));
-
-            // Criando um JLabel para exibir a imagem
             JLabel lblImagem = new JLabel(icone);
             painelTitulo.add(lblImagem, BorderLayout.SOUTH);
-
         } catch (Exception e) {
-            // Se a imagem não for encontrada, apenas imprime um aviso no console
             System.err.println("Aviso: Imagem do logo não encontrada.");
         }
 
@@ -120,13 +121,8 @@ public class LoginWindow extends JFrame {
     }
 
     private void adicionarListeners() {
-        // Ação para o botão de Login
         btnLogin.addActionListener(_ -> fazerLogin());
-
-        // Ação para o botão Cancelar
         btnCancelar.addActionListener(_ -> System.exit(0));
-
-        // Pressionar Enter no campo de senha também tenta fazer login
         txtSenha.addActionListener(_ -> fazerLogin());
     }
 
@@ -137,8 +133,6 @@ public class LoginWindow extends JFrame {
         System.out.println("🔍 TENTATIVA DE LOGIN:");
         System.out.println("📧 Email digitado: '" + email + "'");
         System.out.println("🔑 Senha digitada: '" + senha + "'");
-        System.out.println("📏 Tamanho do email: " + email.length());
-        System.out.println("📏 Tamanho da senha: " + senha.length());
 
         if (email.isEmpty() || senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Atenção",
@@ -150,26 +144,28 @@ public class LoginWindow extends JFrame {
             Usuario usuario = sistema.buscarUsuarioPorEmail(email);
             System.out.println("✅ Usuário encontrado: " + usuario.getNome());
             System.out.println("🔑 Senha no sistema: '" + usuario.getSenha() + "'");
-            System.out.println("🔑 Senha digitada: '" + senha + "'");
             System.out.println("🔍 Senhas são iguais? " + usuario.getSenha().equals(senha));
 
-            if (usuario != null && usuario.getSenha().equals(senha)) {
-                // Login bem-sucedido
+            if (usuario.getSenha().equals(senha)) {
                 JOptionPane.showMessageDialog(this, "Bem-vindo, " + usuario.getNome() + "!", "Login bem-sucedido",
                         JOptionPane.INFORMATION_MESSAGE);
-                this.dispose(); // Fecha a janela de login
-                new MainWindow(usuario).setVisible(true); // Abre a janela principal
+                this.dispose();
+
+                /**
+                 * --- CORREÇÃO 2: Passar a instância existente do Sistema ---
+                 * A MainWindow (e seu construtor) também precisa ser ajustada para receber
+                 * a instância do sistema.
+                 */
+                new MainWindow(sistema, usuario).setVisible(true);
+
             } else {
-                // Senha incorreta
                 throw new SistemaException("Login", email, "Senha incorreta.");
             }
         } catch (SistemaException ex) {
-            // Usuário não encontrado ou senha incorreta
             System.out.println("❌ Erro de login: " + ex.getMessage());
             JOptionPane.showMessageDialog(this, "Erro de Login: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             txtSenha.setText("");
             txtSenha.requestFocus();
         }
     }
-
 }
