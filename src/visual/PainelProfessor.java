@@ -61,7 +61,7 @@ public class PainelProfessor extends JPanel {
         atualizarTabelaAlunos();
     }
 
-    // Construtor de compatibilidade (modo standalone - com logout)
+    // Construtor de compatibilidade
     public PainelProfessor(Sistema sistema, Professor professor) {
         this(sistema, professor, true);
     }
@@ -73,7 +73,7 @@ public class PainelProfessor extends JPanel {
         
         add(tabbedPane, BorderLayout.CENTER);
         
-        // Só adiciona painel de logout se solicitado (modo standalone)
+        // Só adiciona painel de logout se solicitado
         if (mostrarBotaoLogout) {
             add(criarPainelSair(), BorderLayout.SOUTH);
         }
@@ -117,11 +117,11 @@ public class PainelProfessor extends JPanel {
         
         // Estatísticas
         List<Turma> turmas = sistema.buscarTurmasPorProfessor(professor);
-        JLabel lblTurmas = new JLabel("📚 Turmas sob responsabilidade: " + turmas.size());
+        JLabel lblTurmas = new JLabel(" Turmas sob responsabilidade: " + turmas.size());
         lblTurmas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
         int totalAlunos = turmas.stream().mapToInt(t -> t.getAlunosMatriculados().size()).sum();
-        JLabel lblAlunos = new JLabel("👥 Total de alunos: " + totalAlunos);
+        JLabel lblAlunos = new JLabel(" Total de alunos: " + totalAlunos);
         lblAlunos.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
         painelInfo.add(lblNome);

@@ -205,7 +205,7 @@ public class Sistema implements Serializable {
             .collect(Collectors.toList());
     }
 
-    // CORREÇÃO: Método para buscar turmas por nome do curso (String)
+    // Método para buscar turmas por nome do curso
     public List<Turma> buscarTurmasPorCurso(String nomeCurso) {
         return turmas.stream()
             .filter(t -> t.getCurso() != null && t.getCurso().getNome().equalsIgnoreCase(nomeCurso))
@@ -321,10 +321,7 @@ public class Sistema implements Serializable {
         return String.format("%011d", (long)(Math.random() * 100000000000L));
     }
     
-    /**
-     * NOVO MÉTODO: Gera um número de matrícula sequencial.
-     * @return Uma String com o próximo número de matrícula disponível.
-     */
+    //NOVO MÉTODO: Gera um número de matrícula sequencial.
     public String gerarProximaMatricula() {
         int anoAtual = LocalDate.now().getYear();
         
@@ -353,7 +350,7 @@ public class Sistema implements Serializable {
             Curso si = new Curso(3, "Sistemas de Informação");
             cursos.addAll(Arrays.asList(cc, es, si));
             
-            // Criar usuários de teste
+            // Criando usuários de teste
             Administrador admin = new Administrador(1, "Administrador", "admin@sistema.com", "00000000000", "TOTAL");
             Professor prof1 = new Professor(2, "Dr. Carlos Alberto", "carlos@sistema.com", "11111111111", "Computação", "Doutor");
             Coordenador coord1 = new Coordenador(3, "Debora Santos", "debora@sistema.com", "22222222222", cc);
@@ -362,17 +359,17 @@ public class Sistema implements Serializable {
             
             usuarios.addAll(Arrays.asList(admin, prof1, coord1, aluno1, aluno2));
             
-            // Criar disciplina
+            // Criando disciplina
             Disciplina prog1 = new Disciplina("Programação I", "PROG001", prof1.getCpf(), cc);
             disciplinas.add(prog1);
             
-            // Criar turma de exemplo
+            // criando turma de exemplo
             Turma turma1 = new Turma("Programação I", 2025, 1, prof1, cc);
             turma1.adicionarAluno(aluno1);
             turma1.adicionarAluno(aluno2);
             turmas.add(turma1);
             
-            // Criar algumas frequências de exemplo
+            // criando algumas frequências de exemplo
             frequencias.add(new Frequencia(1, "2024001", "11111111111", "Programação I", LocalDate.now().minusDays(5), true, ""));
             frequencias.add(new Frequencia(2, "2024002", "11111111111", "Programação I", LocalDate.now().minusDays(5), false, "Faltou"));
             frequencias.add(new Frequencia(3, "2024001", "11111111111", "Programação I", LocalDate.now().minusDays(3), true, ""));

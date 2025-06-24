@@ -40,7 +40,7 @@ public class PainelAluno extends JPanel {
         criarInterface();
     }
 
-    // Construtor de compatibilidade (modo standalone - com logout)
+    // Construtor de compatibilidade 
     public PainelAluno(Sistema sistema, Aluno aluno) {
         this(sistema, aluno, true);
     }
@@ -52,7 +52,7 @@ public class PainelAluno extends JPanel {
         
         add(tabbedPane, BorderLayout.CENTER);
         
-        // Só adiciona painel de logout se solicitado (modo standalone)
+        // Só adiciona painel de logout se solicitado 
         if (mostrarBotaoLogout) {
             add(criarPainelSair(), BorderLayout.SOUTH);
         }
@@ -94,7 +94,7 @@ public class PainelAluno extends JPanel {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            "📚 Resumo Acadêmico",
+            " Resumo Acadêmico",
             0, 0,
             new Font("Segoe UI", Font.BOLD, 14),
             new Color(52, 152, 219)
@@ -191,13 +191,13 @@ public class PainelAluno extends JPanel {
         lblFaltas.setForeground(new Color(231, 76, 60));
         painel.add(lblFaltas, gbc);
 
-        // Botão alterar senha (só aparece no modo standalone)
+        // Botão alterar senha 
         if (mostrarBotaoLogout) {
             gbc.gridy = 10; gbc.gridx = 0; gbc.gridwidth = 2; 
             gbc.insets = new Insets(20, 8, 8, 8);
             gbc.anchor = GridBagConstraints.CENTER;
             
-            JButton btnAlterarSenha = new JButton("🔑 Alterar Minha Senha");
+            JButton btnAlterarSenha = new JButton(" Alterar Minha Senha");
             btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             btnAlterarSenha.setPreferredSize(new java.awt.Dimension(180, 35));
             btnAlterarSenha.addActionListener(e -> {

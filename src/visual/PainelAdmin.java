@@ -70,7 +70,7 @@ public class PainelAdmin extends JPanel {
         atualizarTodasTabelas();
     }
 
-    // Construtor de compatibilidade (modo standalone - com logout)
+    // Construtor de compatibilidade 
     public PainelAdmin(Sistema sistema, Administrador admin) {
         this(sistema, admin, true);
     }
