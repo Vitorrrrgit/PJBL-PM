@@ -5,7 +5,7 @@ import javax.swing.*;
 
 /**
  * Utilitário para aplicar cores em botões Swing sem complicações
- * Resolve todos os problemas comuns do Swing automaticamente
+ * Resolve todos os problemas comuns do Swing automaticamente, alem de ajudar na personalização do sistema
  */
 public class UtilBotoes {
     

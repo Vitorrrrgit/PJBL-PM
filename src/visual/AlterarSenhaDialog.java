@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import models.Sistema;
 import models.Usuario;
-import persistencia.SistemaException;
+import models.persistencia.SistemaException;
 
 public class AlterarSenhaDialog extends JDialog {
 

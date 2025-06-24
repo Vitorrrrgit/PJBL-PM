@@ -1,4 +1,4 @@
-package persistencia;
+package models.persistencia;
 
 public class SistemaException extends Exception {
     private final String tipoEntidade;

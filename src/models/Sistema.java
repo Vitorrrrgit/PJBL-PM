@@ -4,7 +4,8 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import persistencia.SistemaException;
+
+import models.persistencia.SistemaException;
 
 public class Sistema implements Serializable {
     @java.io.Serial
@@ -232,7 +233,7 @@ public class Sistema implements Serializable {
     // ===== IMPORTAÇÃO E EXPORTAÇÃO CSV =====
     public void importarFrequenciasCSV(String caminhoArquivo) {
         try {
-            persistencia.SerializadorJava serializador = new persistencia.SerializadorJava();
+            models.persistencia.SerializadorJava serializador = new models.persistencia.SerializadorJava();
             int proximoId = obterProximoIdFrequencia();
             serializador.carregarFrequenciasDeCSV(caminhoArquivo, this.frequencias, proximoId);
             salvarDados();
@@ -243,7 +244,7 @@ public class Sistema implements Serializable {
     }
 
     public void exportarFrequenciasCSV(String caminhoArquivo) throws java.io.IOException {
-        persistencia.SerializadorJava serializador = new persistencia.SerializadorJava();
+        models.persistencia.SerializadorJava serializador = new models.persistencia.SerializadorJava();
         serializador.salvarFrequenciasCSV(caminhoArquivo, this.frequencias);
         System.out.println(" Frequências exportadas para: " + caminhoArquivo);
     }

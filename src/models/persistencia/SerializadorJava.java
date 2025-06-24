@@ -1,4 +1,4 @@
-package persistencia;
+package models.persistencia;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

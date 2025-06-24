@@ -1,0 +1,10 @@
+{
+  "liveServer.settings.port": 5501,
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-24",
+      "path": "C:/Program Files/Eclipse Adoptium/jdk-24.0.1.9-hotspot"
+    }
+  ],
+  "java.configuration.defaultRuntime": "JavaSE-24"
+}

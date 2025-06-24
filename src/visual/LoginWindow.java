@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.*;
 import models.Sistema;
 import models.Usuario;
-import persistencia.SistemaException;
+import models.persistencia.SistemaException;
 
 public class LoginWindow extends JFrame {
     private final Sistema sistema;
@@ -58,7 +58,8 @@ public class LoginWindow extends JFrame {
         // ===== PAINEL DO TÍTULO E IMAGEM (NORTE) =====
         JPanel painelTitulo = new JPanel(new BorderLayout());
         painelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
+        painelTitulo.setBackground(Color.WHITE);
+
         // Título
         JLabel lblTitulo = new JLabel("Sistema de Frequência");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
@@ -77,21 +78,26 @@ public class LoginWindow extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
+        painelFormulario.setBackground(Color.WHITE);
 
         // Email
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         painelFormulario.add(new JLabel("Email:"), gbc);
         gbc.gridx = 1;
         painelFormulario.add(txtEmail, gbc);
 
         // Senha
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         painelFormulario.add(new JLabel("Senha:"), gbc);
         gbc.gridx = 1;
         painelFormulario.add(txtSenha, gbc);
 
         // Botões
-        gbc.gridy = 2; gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy = 2;
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         painelBotoes.add(btnCancelar);
         painelBotoes.add(btnLogin);
@@ -102,9 +108,8 @@ public class LoginWindow extends JFrame {
         painelInfo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         painelInfo.setBackground(new Color(220, 220, 220));
         JLabel lblInfo = new JLabel(
-            "<html><center>Sistema de Frequência Acadêmica - POO - 2025<br>" +
-            "<b>Alunos:</b> Alana Vasconcelos, Guilherme Montoya e Vitor Henrique</center></html>"
-        );
+                "<html><center>Sistema de Frequência Acadêmica - POO - 2025<br>" +
+                        "<b>Alunos:</b> Alana Vasconcelos, Guilherme Montoya e Vitor Henrique</center></html>");
         lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
         painelInfo.add(lblInfo);
 
@@ -117,8 +122,8 @@ public class LoginWindow extends JFrame {
     private JLabel criarLabelImagem() {
         // Lista de possíveis locais para a imagem
         String[] possiveisCaminhos = {
-            "src/image/imagempraTentarSistema.png",
-            "image/imagempraTentarSistema.png",
+                "src/image/imagempraTentarSistema.png",
+                "image/imagempraTentarSistema.png",
         };
 
         for (String caminho : possiveisCaminhos) {
@@ -126,12 +131,12 @@ public class LoginWindow extends JFrame {
                 File arquivo = new File(caminho);
                 if (arquivo.exists()) {
                     ImageIcon icone = new ImageIcon(caminho);
-                    
+
                     // Redimensionar a imagem se necessário
                     Image img = icone.getImage();
                     Image imgRedimensionada = img.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
                     ImageIcon iconeRedimensionado = new ImageIcon(imgRedimensionada);
-                    
+
                     JLabel label = new JLabel(iconeRedimensionado);
                     label.setHorizontalAlignment(SwingConstants.CENTER);
                     System.out.println(" Imagem carregada: " + caminho);
@@ -142,11 +147,21 @@ public class LoginWindow extends JFrame {
             }
         }
 
-        // Se não encontrou nenhuma imagem, cria um placeholder
-        JLabel placeholder = new JLabel("📚");
-        placeholder.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
+        JLabel placeholder = new JLabel("<html><pre>" +
+                "    ┌─────────────┐\n" +
+                "    │ ┌─────────┐ │\n" +
+                "    │ │ ALUNO 1 │ ✓│\n" +
+                "    │ │ ALUNO 2 │ ✓│\n" +
+                "    │ │ ALUNO 3 │ ✗│\n" +
+                "    │ │ ALUNO 4 │ ✓│\n" +
+                "    │ └─────────┘ │\n" +
+                "    └─────────────┘\n" +
+                "     FREQUÊNCIA\n" +
+                "</pre></html>");
+        placeholder.setFont(new Font("Monospaced", Font.PLAIN, 11));
         placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        System.out.println(" Nenhuma imagem encontrada. Usando emoji placeholder.");
+        placeholder.setForeground(new Color(52, 73, 94)); // Cor elegante
+        System.out.println("🎨 Nenhuma imagem encontrada. Usando ASCII art placeholder.");
         return placeholder;
     }
 
@@ -154,7 +169,7 @@ public class LoginWindow extends JFrame {
         btnLogin.addActionListener(_ -> fazerLogin());
         btnCancelar.addActionListener(_ -> System.exit(0));
         txtSenha.addActionListener(_ -> fazerLogin());
-        
+
         // Enter no campo email vai para senha
         txtEmail.addActionListener(_ -> txtSenha.requestFocus());
     }

@@ -33,7 +33,7 @@ import models.Professor;
 import models.Sistema;
 import models.Turma;
 import models.Usuario;
-import persistencia.SistemaException;
+import models.persistencia.SistemaException;
 
 public class PainelAdmin extends JPanel {
 
