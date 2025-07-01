@@ -57,8 +57,8 @@ public class AlterarSenhaDialog extends JDialog {
         JButton btnCancelar = new JButton("Cancelar");
         JButton btnSalvar = new JButton("Salvar");
 
-        btnCancelar.addActionListener(e -> dispose());
-        btnSalvar.addActionListener(e -> salvarSenha());
+        btnCancelar.addActionListener(_ -> dispose());
+        btnSalvar.addActionListener(_ -> salvarSenha());
 
         painelBotoes.add(btnCancelar);
         painelBotoes.add(btnSalvar);

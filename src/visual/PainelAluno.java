@@ -200,7 +200,7 @@ public class PainelAluno extends JPanel {
             JButton btnAlterarSenha = new JButton(" Alterar Minha Senha");
             btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             btnAlterarSenha.setPreferredSize(new java.awt.Dimension(180, 35));
-            btnAlterarSenha.addActionListener(e -> {
+            btnAlterarSenha.addActionListener(_ -> {
                 Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
                 new AlterarSenhaDialog(parent, sistema, aluno).setVisible(true);
             });
@@ -234,7 +234,7 @@ public class PainelAluno extends JPanel {
         btnLogout.setForeground(Color.WHITE);
         btnLogout.setBorderPainted(false);
         btnLogout.setFocusPainted(false);
-        btnLogout.addActionListener(e -> {
+        btnLogout.addActionListener(_ -> {
             int confirmacao = JOptionPane.showConfirmDialog(
                 this, 
                 "Deseja realmente sair?", 

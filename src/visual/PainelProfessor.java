@@ -90,8 +90,8 @@ public class PainelProfessor extends JPanel {
         painelTopo.add(comboTurmas);
         painelTopo.add(btnSalvar);
 
-        comboTurmas.addActionListener(e -> atualizarTabelaAlunos());
-        btnSalvar.addActionListener(e -> salvarFrequencias());
+        comboTurmas.addActionListener(_ -> atualizarTabelaAlunos());
+        btnSalvar.addActionListener(_ -> salvarFrequencias());
 
         painel.add(painelTopo, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaAlunos), BorderLayout.CENTER);
@@ -139,7 +139,7 @@ public class PainelProfessor extends JPanel {
             JButton btnAlterarSenha = new JButton(" Alterar Senha");
             btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             btnAlterarSenha.setPreferredSize(new java.awt.Dimension(150, 35));
-            btnAlterarSenha.addActionListener(e -> {
+            btnAlterarSenha.addActionListener(_ -> {
                 Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
                 new AlterarSenhaDialog(parent, sistema, professor).setVisible(true);
             });
@@ -159,7 +159,7 @@ public class PainelProfessor extends JPanel {
         btnLogout.setBorderPainted(false);
         btnLogout.setFocusPainted(false);
 
-        btnLogout.addActionListener(e -> {
+        btnLogout.addActionListener(_ -> {
             int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja realmente fazer logout?", "Confirmar Saída", JOptionPane.YES_NO_OPTION);
             if (confirmacao == JOptionPane.YES_OPTION) {
                 Window janelaPrincipal = SwingUtilities.getWindowAncestor(this);

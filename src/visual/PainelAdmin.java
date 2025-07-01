@@ -143,8 +143,8 @@ public class PainelAdmin extends JPanel {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdicionar = new JButton(" Adicionar");
         JButton btnRemover = new JButton(" Remover");
-        btnAdicionar.addActionListener(e -> adicionarUsuario());
-        btnRemover.addActionListener(e -> removerUsuario(tabela));
+        btnAdicionar.addActionListener(_ -> adicionarUsuario());
+        btnRemover.addActionListener(_ -> removerUsuario(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
         painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
@@ -161,8 +161,8 @@ public class PainelAdmin extends JPanel {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdicionar = new JButton(" Adicionar");
         JButton btnRemover = new JButton(" Remover");
-        btnAdicionar.addActionListener(e -> adicionarCurso());
-        btnRemover.addActionListener(e -> removerCurso(tabela));
+        btnAdicionar.addActionListener(_ -> adicionarCurso());
+        btnRemover.addActionListener(_ -> removerCurso(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
         painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
@@ -179,8 +179,8 @@ public class PainelAdmin extends JPanel {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdicionar = new JButton(" Adicionar");
         JButton btnRemover = new JButton(" Remover");
-        btnAdicionar.addActionListener(e -> adicionarDisciplina());
-        btnRemover.addActionListener(e -> removerDisciplina(tabela));
+        btnAdicionar.addActionListener(_ -> adicionarDisciplina());
+        btnRemover.addActionListener(_ -> removerDisciplina(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
         painel.add(new JScrollPane(tabela), BorderLayout.CENTER);
@@ -198,9 +198,9 @@ public class PainelAdmin extends JPanel {
         JButton btnAdicionar = new JButton(" Adicionar Turma");
         JButton btnRemover = new JButton(" Remover Turma");
         JButton btnAdicionarAluno = new JButton(" Adicionar Aluno à Turma");
-        btnAdicionar.addActionListener(e -> adicionarTurma());
-        btnRemover.addActionListener(e -> removerTurma(tabela));
-        btnAdicionarAluno.addActionListener(e -> adicionarAlunoATurma(tabela));
+        btnAdicionar.addActionListener(_ -> adicionarTurma());
+        btnRemover.addActionListener(_ -> removerTurma(tabela));
+        btnAdicionarAluno.addActionListener(_ -> adicionarAlunoATurma(tabela));
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnRemover);
         painelBotoes.add(btnAdicionarAluno);
@@ -220,7 +220,7 @@ public class PainelAdmin extends JPanel {
         JComboBox<String> combo = new JComboBox<>(new String[]{"Selecione...", "Relatório Geral", "Alunos", "Professores", "Turmas"});
         painelFiltro.add(combo);
         
-        combo.addActionListener(e -> {
+        combo.addActionListener(_ -> {
             String sel = (String) combo.getSelectedItem();
             if (sel != null) switch (sel) {
                 case "Relatório Geral" -> area.setText(sistema.gerarRelatorioGeral());
@@ -231,7 +231,7 @@ public class PainelAdmin extends JPanel {
         });
         
         JButton btnExportar = new JButton(" Exportar Relatório (TXT)");
-        btnExportar.addActionListener(e -> exportarRelatorio(area.getText()));
+        btnExportar.addActionListener(_ -> exportarRelatorio(area.getText()));
         
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         painelBotoes.add(btnExportar);
@@ -253,8 +253,8 @@ public class PainelAdmin extends JPanel {
         btnExportar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnExportar.setPreferredSize(new java.awt.Dimension(250, 50));
         
-        btnImportar.addActionListener(e -> importarFrequencias());
-        btnExportar.addActionListener(e -> exportarFrequencias());
+        btnImportar.addActionListener(_ -> importarFrequencias());
+        btnExportar.addActionListener(_ -> exportarFrequencias());
         
         painel.add(btnImportar);
         painel.add(btnExportar);
@@ -286,7 +286,7 @@ public class PainelAdmin extends JPanel {
         JButton btnAlterarSenha = new JButton(" Alterar Senha");
         btnAlterarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnAlterarSenha.setPreferredSize(new java.awt.Dimension(150, 35));
-        btnAlterarSenha.addActionListener(e -> {
+        btnAlterarSenha.addActionListener(_ -> {
             Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
             new AlterarSenhaDialog(parent, sistema, admin).setVisible(true);
         });
@@ -346,7 +346,7 @@ public class PainelAdmin extends JPanel {
         painelDialogo.add(cursoLabel);
         painelDialogo.add(cursoCombo);
 
-        tipoCombo.addActionListener(e -> {
+        tipoCombo.addActionListener(_ -> {
             boolean isAdm = "Administrador".equals(tipoCombo.getSelectedItem());
             cursoLabel.setVisible(!isAdm);
             cursoCombo.setVisible(!isAdm);
@@ -570,7 +570,7 @@ public class PainelAdmin extends JPanel {
         btnLogout.setBorderPainted(false);
         btnLogout.setFocusPainted(false);
         
-        btnLogout.addActionListener(e -> {
+        btnLogout.addActionListener(_ -> {
             Window janela = SwingUtilities.getWindowAncestor(this);
             if (janela != null) janela.dispose();
             new LoginWindow(sistema).setVisible(true);

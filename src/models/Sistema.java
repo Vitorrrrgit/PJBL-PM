@@ -76,7 +76,7 @@ public class Sistema implements Serializable {
     // ===== USUÁRIOS =====
     public List<Usuario> listarUsuarios() {
         return new ArrayList<>(usuarios);
-    }
+    }  // DUVIDA SE ESSA É ABSTRATA MAS ACHO QUE É SIM
 
     public Usuario buscarUsuarioPorEmail(String email) throws SistemaException {
         return usuarios.stream()
